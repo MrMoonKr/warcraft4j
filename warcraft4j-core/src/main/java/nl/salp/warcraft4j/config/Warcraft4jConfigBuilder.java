@@ -57,7 +57,7 @@ public class Warcraft4jConfigBuilder {
      *
      * @see PropertyWarcraft4jConfig#isOnline()
      */
-    public Warcraft4jConfigBuilder online(boolean online) {
+    public Warcraft4jConfigBuilder online( boolean online ) {
         this.online = online;
         return this;
     }
@@ -71,7 +71,7 @@ public class Warcraft4jConfigBuilder {
      *
      * @see PropertyWarcraft4jConfig#getWowInstallationDirectory()
      */
-    public Warcraft4jConfigBuilder withWowDir(String wowDir) {
+    public Warcraft4jConfigBuilder withWowDir( String wowDir ) {
         this.wowDir = wowDir;
         return this;
     }
@@ -85,7 +85,7 @@ public class Warcraft4jConfigBuilder {
      *
      * @see PropertyWarcraft4jConfig#getWowInstallationDirectory()
      */
-    public Warcraft4jConfigBuilder withWowDir(Path wowDir) {
+    public Warcraft4jConfigBuilder withWowDir( Path wowDir ) {
         this.wowDir = wowDir == null ? null : wowDir.toString();
         return this;
     }
@@ -99,7 +99,7 @@ public class Warcraft4jConfigBuilder {
      *
      * @see PropertyWarcraft4jConfig#isCaching()
      */
-    public Warcraft4jConfigBuilder caching(boolean caching) {
+    public Warcraft4jConfigBuilder caching( boolean caching ) {
         this.caching = caching;
         return this;
     }
@@ -113,7 +113,7 @@ public class Warcraft4jConfigBuilder {
      *
      * @see PropertyWarcraft4jConfig#getCacheDirectory()
      */
-    public Warcraft4jConfigBuilder withCacheDir(String cacheDir) {
+    public Warcraft4jConfigBuilder withCacheDir( String cacheDir ) {
         this.cacheDir = cacheDir;
         return this;
     }
@@ -127,11 +127,10 @@ public class Warcraft4jConfigBuilder {
      *
      * @see PropertyWarcraft4jConfig#getCacheDirectory()
      */
-    public Warcraft4jConfigBuilder withCacheDir(Path cacheDir) {
+    public Warcraft4jConfigBuilder withCacheDir( Path cacheDir ) {
         this.cacheDir = cacheDir == null ? null : cacheDir.toString();
         return this;
     }
-
 
     /**
      * Set the preferred locale.
@@ -142,7 +141,7 @@ public class Warcraft4jConfigBuilder {
      *
      * @see PropertyWarcraft4jConfig#getLocale()
      */
-    public Warcraft4jConfigBuilder withLocale(String locale) {
+    public Warcraft4jConfigBuilder withLocale( String locale ) {
         this.locale = locale;
         return this;
     }
@@ -156,7 +155,7 @@ public class Warcraft4jConfigBuilder {
      *
      * @see PropertyWarcraft4jConfig#getLocale()
      */
-    public Warcraft4jConfigBuilder withLocale(Locale locale) {
+    public Warcraft4jConfigBuilder withLocale( Locale locale ) {
         this.locale = locale != null ? locale.name() : null;
         return this;
     }
@@ -170,7 +169,7 @@ public class Warcraft4jConfigBuilder {
      *
      * @see PropertyWarcraft4jConfig#getRegion()
      */
-    public Warcraft4jConfigBuilder withRegion(String region) {
+    public Warcraft4jConfigBuilder withRegion( String region ) {
         this.region = region;
         return this;
     }
@@ -184,7 +183,7 @@ public class Warcraft4jConfigBuilder {
      *
      * @see PropertyWarcraft4jConfig#getRegion()
      */
-    public Warcraft4jConfigBuilder withRegion(Region region) {
+    public Warcraft4jConfigBuilder withRegion( Region region ) {
         this.region = region != null ? region.name() : null;
         return this;
     }
@@ -198,7 +197,7 @@ public class Warcraft4jConfigBuilder {
      *
      * @see PropertyWarcraft4jConfig#getBranch()
      */
-    public Warcraft4jConfigBuilder withBranch(String branch) {
+    public Warcraft4jConfigBuilder withBranch( String branch ) {
         this.branch = branch;
         return this;
     }
@@ -212,7 +211,7 @@ public class Warcraft4jConfigBuilder {
      *
      * @see PropertyWarcraft4jConfig#getBranch()
      */
-    public Warcraft4jConfigBuilder withBranch(Branch branch) {
+    public Warcraft4jConfigBuilder withBranch( Branch branch ) {
         this.branch = branch != null ? branch.name() : null;
         return this;
     }
@@ -226,13 +225,13 @@ public class Warcraft4jConfigBuilder {
      */
     public PropertyWarcraft4jConfig build() throws Warcraft4jConfigException {
         Configuration config = new BaseConfiguration();
-        config.addProperty(PropertyWarcraft4jConfig.ONLINE_KEY, online);
-        config.addProperty(PropertyWarcraft4jConfig.WOW_DIR_KEY, wowDir);
-        config.addProperty(PropertyWarcraft4jConfig.CACHE_KEY, caching);
-        config.addProperty(PropertyWarcraft4jConfig.CACHE_DIR_KEY, cacheDir);
-        config.addProperty(PropertyWarcraft4jConfig.LOCALE_KEY, locale);
-        config.addProperty(PropertyWarcraft4jConfig.REGION_KEY, region);
-        config.addProperty(PropertyWarcraft4jConfig.BRANCH_KEY, branch);
-        return new PropertyWarcraft4jConfig(config);
+        config.addProperty( PropertyWarcraft4jConfig.ONLINE_KEY, online );
+        config.addProperty( PropertyWarcraft4jConfig.WOW_DIR_KEY, wowDir );
+        config.addProperty( PropertyWarcraft4jConfig.CACHE_KEY, caching );
+        config.addProperty( PropertyWarcraft4jConfig.CACHE_DIR_KEY, cacheDir );
+        config.addProperty( PropertyWarcraft4jConfig.LOCALE_KEY, locale );
+        config.addProperty( PropertyWarcraft4jConfig.REGION_KEY, region );
+        config.addProperty( PropertyWarcraft4jConfig.BRANCH_KEY, branch );
+        return new PropertyWarcraft4jConfig( config );
     }
 }

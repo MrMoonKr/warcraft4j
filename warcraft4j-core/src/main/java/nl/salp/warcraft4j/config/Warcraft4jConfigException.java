@@ -31,8 +31,8 @@ public class Warcraft4jConfigException extends Warcraft4jException {
      *
      * @param message The exception message.
      */
-    public Warcraft4jConfigException(String message) {
-        super(message);
+    public Warcraft4jConfigException( String message ) {
+        super( message );
     }
 
     /**
@@ -41,8 +41,8 @@ public class Warcraft4jConfigException extends Warcraft4jException {
      * @param message The exception message.
      * @param cause   The cause exception.
      */
-    public Warcraft4jConfigException(String message, Throwable cause) {
-        super(message, cause);
+    public Warcraft4jConfigException( String message, Throwable cause ) {
+        super( message, cause );
     }
 
     /**
@@ -50,7 +50,7 @@ public class Warcraft4jConfigException extends Warcraft4jException {
      *
      * @param cause The cause exception.
      */
-    public Warcraft4jConfigException(Throwable cause) {
-        super(cause);
+    public Warcraft4jConfigException( Throwable cause ) {
+        super( cause );
     }
 }

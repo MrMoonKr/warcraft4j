@@ -39,52 +39,49 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * @author Barre Dijkstra
  */
 public class ListFile {
+
     private final Map<String, Long> files;
     private final Map<Long, String> hashes;
     private final Set<Long> calculated;
 
-    private ListFile(Map<String, Long> files) {
+    private ListFile( Map<String, Long> files ) {
         this.files = files;
-        this.hashes = files.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+        this.hashes = files.entrySet().stream().collect( Collectors.toMap( Map.Entry::getValue, Map.Entry::getKey ) );
         this.calculated = new HashSet<>();
     }
 
     public Set<ListCascFile> getCascFiles() {
-        return hashes.keySet().stream()
-                .map(hash -> new ListCascFile(hash, getFilenames(hash).orElse(null), null, calculated.contains(hash)))
-                .collect(Collectors.toSet());
+        return hashes.keySet().stream().map( hash -> new ListCascFile( hash, getFilenames( hash ).orElse( null ), null,
+                calculated.contains( hash ) ) ).collect( Collectors.toSet() );
     }
 
-    public long getHash(String filename) {
-        return Optional.ofNullable(filename)
-                .filter(StringUtils::isNotEmpty)
-                .map(f -> files.getOrDefault(f, ((Supplier<Long>) () -> {
-                    byte[] data = f.replace('/', '\\').toUpperCase().getBytes(StandardCharsets.US_ASCII);
-                    long hash = JenkinsHash.hashLittle2(data, data.length);
-                    files.put(f, hash);
-                    hashes.put(hash, f);
-                    calculated.add(hash);
+    public long getHash( String filename ) {
+        return Optional.ofNullable( filename ).filter( StringUtils::isNotEmpty )
+                .map( f -> files.getOrDefault( f, ( ( Supplier<Long> )() -> {
+                    byte[] data = f.replace( '/', '\\' ).toUpperCase().getBytes( StandardCharsets.US_ASCII );
+                    long hash = JenkinsHash.hashLittle2( data, data.length );
+                    files.put( f, hash );
+                    hashes.put( hash, f );
+                    calculated.add( hash );
                     return hash;
-                }).get()))
-                .orElse(0L);
+                } ).get() ) ).orElse( 0L );
     }
 
-    public boolean isFileKnown(String filename) {
-        long hash = getHash(filename);
-        return hash != 0 || calculated.contains(hash);
+    public boolean isFileKnown( String filename ) {
+        long hash = getHash( filename );
+        return hash != 0 || calculated.contains( hash );
     }
 
-    public boolean isFileKnown(long hash) {
-        return hashes.containsKey(hash);
+    public boolean isFileKnown( long hash ) {
+        return hashes.containsKey( hash );
     }
 
-    public Optional<String> getFilenames(long hash) {
-        return Optional.ofNullable(hashes.get(hash));
+    public Optional<String> getFilenames( long hash ) {
+        return Optional.ofNullable( hashes.get( hash ) );
     }
 
     public Set<String> getFilenames() {
-        return Collections.unmodifiableSet(files.keySet());
+        return Collections.unmodifiableSet( files.keySet() );
     }
 
     public int getFilenameCount() {
@@ -92,7 +89,7 @@ public class ListFile {
     }
 
     public Set<Long> getHashes() {
-        return Collections.unmodifiableSet(hashes.keySet());
+        return Collections.unmodifiableSet( hashes.keySet() );
     }
 
     public int getHashCount() {
@@ -100,25 +97,43 @@ public class ListFile {
     }
 
     public static ListFile empty() {
-        return new ListFile(Collections.emptyMap());
+        return new ListFile( Collections.emptyMap() );
     }
 
-    public static ListFile fromFile(Path listFile) throws IOException {
-        return new ListFile(parseFile(listFile));
+    /**
+     * "listfile.txt" 파일로 부터 데이터 로딩하는 팩토리 메서드
+     * @param listFile
+     * @return
+     * @throws IOException
+     */
+    public static ListFile fromFile( Path listFile ) throws IOException {
+        return new ListFile( parseFile( listFile ) );
     }
 
-    private static Map<String, Long> parseFile(Path listFile) throws IOException {
+    /**
+     * "listfile.txt" 파일 파싱
+     * @param listFile
+     * @return
+     * @throws IOException
+     */
+    private static Map<String, Long> parseFile( Path listFile ) throws IOException 
+    {
         Map<String, Long> listfile = new HashMap<>();
-        try (DataReader reader = new FileDataReader(listFile)) {
-            while (reader.hasRemaining()) {
-                String line = reader.readNext(DataTypeFactory.getStringLine()).trim();
-                if (isNotEmpty(line)) {
-                    byte[] data = line.replace('/', '\\').toUpperCase().getBytes(StandardCharsets.US_ASCII);
-                    long hash = JenkinsHash.hashLittle2(data, data.length);
-                    listfile.put(line, hash);
+
+        try ( DataReader reader = new FileDataReader( listFile ) ) 
+        {
+            while ( reader.hasRemaining() ) 
+            {
+                String line = reader.readNext( DataTypeFactory.getStringLine() ).trim();
+                if ( isNotEmpty( line ) ) 
+                {
+                    byte[] data = line.replace( '/', '\\' ).toUpperCase().getBytes( StandardCharsets.US_ASCII );
+                    long hash = JenkinsHash.hashLittle2( data, data.length );
+                    listfile.put( line, hash );
                 }
             }
         }
+
         return listfile;
     }
 }

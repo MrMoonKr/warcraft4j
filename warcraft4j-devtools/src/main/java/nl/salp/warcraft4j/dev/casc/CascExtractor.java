@@ -31,17 +31,21 @@ import java.nio.file.Paths;
  * @author Barre Dijkstra
  */
 public class CascExtractor {
+
     private ListFile listFile;
     private LocalCdnCascContext context;
     private CascFileExtractor extractor;
 
-    public CascExtractor(DevToolsConfig devToolsConfig, String path) throws Exception {
-        context = new LocalCdnCascContext(devToolsConfig);
-        listFile = ListFile.fromFile(devToolsConfig.getListFilePath());
+    public CascExtractor( DevToolsConfig devToolsConfig, String path ) throws Exception 
+    {
+        context = new LocalCdnCascContext( devToolsConfig );
+
+        listFile = ListFile.fromFile( devToolsConfig.getListFilePath() );
         listFile.getCascFiles().stream()
-                .filter(file -> file.getFilename().isPresent())
-                .forEach(file -> context.resolve(file.getFilename().get(), file.getFilenameHash()));
-        extractor = new CascFileExtractor(Paths.get(path), context);
+                .filter( file -> file.getFilename().isPresent() )
+                .forEach( file -> context.resolve( file.getFilename().get(), file.getFilenameHash() ) );
+                
+        extractor = new CascFileExtractor( Paths.get( path ), context );
     }
 
     public void findAllDbcFiles() {
@@ -49,10 +53,17 @@ public class CascExtractor {
     }
 
     public void extractAllFiles() {
-        extractor.extractAllFiles().forEach(System.out::println);
+        extractor.extractAllFiles().forEach( System.out::println );
     }
 
-    public static void main(String... args) throws Exception {
-        CascExtractor extractor = new CascExtractor(DevToolsConfig.fromFile("w4j_devtools.config"), "C:\\w4j\\test\\extracted");
+    /**
+     * 진입점 함수
+     * @param args
+     * @throws Exception
+     */
+    public static void main( String... args ) throws Exception 
+    {
+        CascExtractor extractor = new CascExtractor( DevToolsConfig.fromFile( "w4j_devtools.config" ),
+                "C:\\w4j\\test\\extracted" );
     }
 }

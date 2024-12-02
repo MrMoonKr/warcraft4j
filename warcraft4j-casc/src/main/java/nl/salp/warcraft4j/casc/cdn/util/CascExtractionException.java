@@ -26,15 +26,16 @@ import nl.salp.warcraft4j.casc.CascException;
  * @author Barre Dijkstra
  */
 public class CascExtractionException extends CascException {
-    public CascExtractionException(String message) {
-        super(message);
+    
+    public CascExtractionException( String message ) {
+        super( message );
     }
 
-    public CascExtractionException(String message, Throwable cause) {
-        super(message, cause);
+    public CascExtractionException( String message, Throwable cause ) {
+        super( message, cause );
     }
 
-    public CascExtractionException(Throwable cause) {
-        super(cause);
+    public CascExtractionException( Throwable cause ) {
+        super( cause );
     }
 }

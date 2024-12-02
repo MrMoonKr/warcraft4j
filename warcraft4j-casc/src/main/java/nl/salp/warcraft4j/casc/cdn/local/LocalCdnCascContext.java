@@ -55,8 +55,8 @@ public class LocalCdnCascContext extends CdnCascContext {
      * @param warcraft4jConfig The configuration.
      */
     @Inject
-    public LocalCdnCascContext(Warcraft4jConfig warcraft4jConfig) {
-        super(warcraft4jConfig);
+    public LocalCdnCascContext( Warcraft4jConfig warcraft4jConfig ) {
+        super( warcraft4jConfig );
     }
 
     /**
@@ -64,8 +64,8 @@ public class LocalCdnCascContext extends CdnCascContext {
      */
     @Override
     public CdnCascConfig getCdnCascConfig() {
-        if (cdnCascConfig == null) {
-            cdnCascConfig = new LocalCdnCascConfig(getWarcraft4jConfig(), getDataReaderProvider());
+        if ( cdnCascConfig == null ) {
+            cdnCascConfig = new LocalCdnCascConfig( getWarcraft4jConfig(), getDataReaderProvider() );
         }
         return cdnCascConfig;
     }
@@ -76,16 +76,13 @@ public class LocalCdnCascContext extends CdnCascContext {
     @Override
     protected Supplier<DataReader> getEncodingReader() {
         FileKey encodingFileChecksum = getCdnCascConfig().getStorageEncodingFileChecksum();
-        IndexEntry indexEntry = Optional.ofNullable(encodingFileChecksum)
-                .flatMap(this::getIndexEntry)
-                .orElseThrow(() -> new CascParsingException(format("No entry found for encoding file entry %s", encodingFileChecksum.toHexString())));
-        LOGGER.trace("Creating data supplier for encoding file {} from {} bytes of data in data.{} at offset {}",
-                encodingFileChecksum,
-                indexEntry.getFileSize(),
-                format("%03d", indexEntry.getFileNumber()),
-                indexEntry.getDataFileOffset()
-        );
-        return getFileDataReaderSupplier(indexEntry);
+        IndexEntry indexEntry = Optional.ofNullable( encodingFileChecksum ).flatMap( this::getIndexEntry )
+                .orElseThrow( () -> new CascParsingException(
+                        format( "No entry found for encoding file entry %s", encodingFileChecksum.toHexString() ) ) );
+        LOGGER.trace( "Creating data supplier for encoding file {} from {} bytes of data in data.{} at offset {}",
+                encodingFileChecksum, indexEntry.getFileSize(), format( "%03d", indexEntry.getFileNumber() ),
+                indexEntry.getDataFileOffset() );
+        return getFileDataReaderSupplier( indexEntry );
     }
 
     /**
@@ -100,9 +97,11 @@ public class LocalCdnCascContext extends CdnCascContext {
      * {@inheritDoc}
      */
     @Override
-    protected Supplier<DataReader> getDataReader(String dataFile, long dataFileOffset, long fileSize) throws CascParsingException {
-        LOGGER.trace("Getting local file data reader for {} (offset: {}, size: {})", dataFile, dataFileOffset + 30, fileSize - 30);
-        return getDataReaderProvider().getDataReader(dataFile, dataFileOffset + 30, fileSize - 30);
+    protected Supplier<DataReader> getDataReader( String dataFile, long dataFileOffset, long fileSize )
+            throws CascParsingException {
+        LOGGER.trace( "Getting local file data reader for {} (offset: {}, size: {})", dataFile, dataFileOffset + 30,
+                fileSize - 30 );
+        return getDataReaderProvider().getDataReader( dataFile, dataFileOffset + 30, fileSize - 30 );
     }
 
     /**
@@ -110,20 +109,21 @@ public class LocalCdnCascContext extends CdnCascContext {
      */
     @Override
     protected Index parseIndex() throws CascParsingException {
-        return new LocalIndexParser(getWarcraft4jConfig().getWowInstallationDirectory()).parse();
+        return new LocalIndexParser( getWarcraft4jConfig().getWowInstallationDirectory() ).parse();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected Optional<String> getDataFileUri(IndexEntry entry) {
+    protected Optional<String> getDataFileUri( IndexEntry entry ) {
         Optional<String> uri;
-        if (entry != null) {
-            String filename = format("data.%03d", entry.getFileNumber());
-            Path file = getWarcraft4jConfig().getWowInstallationDirectory().resolve(Paths.get("Data", "data", filename));
-            if (Files.exists(file) && Files.isReadable(file) && Files.isRegularFile(file)) {
-                uri = Optional.of(file.toString());
+        if ( entry != null ) {
+            String filename = format( "data.%03d", entry.getFileNumber() );
+            Path file = getWarcraft4jConfig().getWowInstallationDirectory()
+                    .resolve( Paths.get( "Data", "data", filename ) );
+            if ( Files.exists( file ) && Files.isReadable( file ) && Files.isRegularFile( file ) ) {
+                uri = Optional.of( file.toString() );
             } else {
                 uri = Optional.empty();
             }

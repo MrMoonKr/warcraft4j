@@ -39,15 +39,17 @@ public class Warcraft4jConfigFactory {
      *
      * @param configFile The path of the configuration file.
      *
-     * @return The {@link PropertyWarcraft4jConfig} with the configuration from the file.
+     * @return The {@link PropertyWarcraft4jConfig} with the configuration from the
+     *         file.
      *
      * @throws Warcraft4jConfigException When the file configuration was invalid.
      */
-    public PropertyWarcraft4jConfig fromFile(String configFile) throws Warcraft4jConfigException {
+    public PropertyWarcraft4jConfig fromFile( String configFile ) throws Warcraft4jConfigException {
         try {
-            return new PropertyWarcraft4jConfig(new DefaultConfigurationBuilder(configFile).getConfiguration());
-        } catch (org.apache.commons.configuration.ConfigurationException e) {
-            throw new Warcraft4jConfigException(format("Error loading Warcraft4J configuration from file %s", configFile), e);
+            return new PropertyWarcraft4jConfig( new DefaultConfigurationBuilder( configFile ).getConfiguration() );
+        } catch ( org.apache.commons.configuration.ConfigurationException e ) {
+            throw new Warcraft4jConfigException(
+                    format( "Error loading Warcraft4J configuration from file %s", configFile ), e );
         }
     }
 

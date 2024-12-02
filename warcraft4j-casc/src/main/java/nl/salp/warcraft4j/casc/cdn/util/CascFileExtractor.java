@@ -61,82 +61,111 @@ public class CascFileExtractor {
      * @param extractionDirectory The directory to extract the files to.
      * @param context             The context to extract the CASC files from.
      */
-    public CascFileExtractor(Path extractionDirectory, CdnCascContext context) {
-        try {
-            this.extractDir = Files.createDirectories(extractionDirectory);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to create the extraction directory tree", e);
+    public CascFileExtractor( Path extractionDirectory, CdnCascContext context ) {
+        try 
+        {
+            this.extractDir = Files.createDirectories( extractionDirectory );
+        } 
+        catch ( IOException e ) {
+            throw new IllegalArgumentException( "Unable to create the extraction directory tree", e );
         }
+        
         this.context = context;
     }
 
-    public Set<Path> extractAllFiles() throws CascExtractionException, DataReadingException, DataParsingException {
+    public Set<Path> extractAllFiles() throws CascExtractionException, DataReadingException, DataParsingException 
+    {
         Map<Long, Path> files = new HashMap<>();
-        files.putAll(context.getResolvedFilenames().stream()
-                .filter(context::isRegisteredData)
-                .filter(fn -> context.getHash(fn).isPresent())
-                .collect(Collectors.toMap(fn -> context.getHash(fn).get(), this::getExtractionFilename)));
-        files.putAll(context.getHashes().stream()
-                .filter(context::isRegisteredData)
-                .filter(h -> !files.containsKey(h))
-                .collect(Collectors.toMap(Function.identity(), this::getExtractionFilename)));
+        files.putAll( context.getResolvedFilenames().stream()
+                .filter( context::isRegisteredData )
+                .filter( fn -> context.getHash( fn ).isPresent() )
+                .collect( Collectors.toMap( fn -> context.getHash( fn ).get(), this::getExtractionFilename ) ) );
+        files.putAll(
+                context.getHashes().stream().filter( context::isRegisteredData ).filter( h -> !files.containsKey( h ) )
+                        .collect( Collectors.toMap( Function.identity(), this::getExtractionFilename ) ) );
 
-        return files.keySet().stream()
-                .map(h -> extractFile(files.get(h), h))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toSet());
+        return files.keySet().stream().map( h -> extractFile( files.get( h ), h ) ).filter( Optional::isPresent )
+                .map( Optional::get ).collect( Collectors.toSet() );
     }
 
-    public Optional<Path> extractFile(String filename) throws CascExtractionException, DataReadingException, DataParsingException {
-        return Optional.ofNullable(filename)
-                .filter(StringUtils::isNotEmpty)
-                .filter(context::isRegisteredData)
-                .filter(fn -> context.getHash(fn).isPresent())
-                .flatMap(fn -> extractFile(getExtractionFilename(fn), context.getHash(fn).get()));
+    public Optional<Path> extractFile( String filename )
+            throws CascExtractionException, DataReadingException, DataParsingException 
+    {
+        return Optional.ofNullable( filename )
+                .filter( StringUtils::isNotEmpty )
+                .filter( context::isRegisteredData )
+                .filter( fn -> context.getHash( fn ).isPresent() )
+                .flatMap( fn -> extractFile( getExtractionFilename( fn ), context.getHash( fn ).get() ) );
     }
 
-    public Optional<Path> extractFile(long filenameHash) throws CascExtractionException, DataReadingException, DataParsingException {
-        return Optional.of(filenameHash)
-                .filter(context::isRegisteredData)
-                .flatMap(h -> extractFile(getExtractionFilename(h), h));
+    public Optional<Path> extractFile( long filenameHash )
+            throws CascExtractionException, DataReadingException, DataParsingException 
+    {
+        return Optional.of( filenameHash )
+                .filter( context::isRegisteredData )
+                .flatMap( h -> extractFile( getExtractionFilename( h ), h ) );
     }
 
-    private Optional<Path> extractFile(Path destination, long filenameHash) throws CascExtractionException, DataReadingException, DataParsingException {
+    private Optional<Path> extractFile( Path destination, long filenameHash )
+            throws CascExtractionException, DataReadingException, DataParsingException 
+    {
         Optional<Path> file;
-        if (isWritableFile(destination)) {
-            try {
-                Files.createDirectories(destination.getParent());
-                try (DataReader in = context.getFileDataReader(filenameHash);
-                     OutputStream out = Files.newOutputStream(destination, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
-                    while (in.hasRemaining()) {
-                        int chunkSize = (int) Math.min(CHUNK_SIZE, in.remaining());
-                        byte[] chunk = in.readNext(DataTypeFactory.getByteArray(chunkSize));
-                        out.write(chunk);
+        if ( isWritableFile( destination ) ) 
+        {
+            try 
+            {
+                Files.createDirectories( destination.getParent() ); // 부모 디렉토리 생성
+                try ( DataReader in = context.getFileDataReader( filenameHash );
+                        OutputStream out = Files.newOutputStream( destination, StandardOpenOption.CREATE,
+                                StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE ) ) 
+                {
+                    while ( in.hasRemaining() ) 
+                    {
+                        int chunkSize = ( int )Math.min( CHUNK_SIZE, in.remaining() );
+                        byte[] chunk = in.readNext( DataTypeFactory.getByteArray( chunkSize ) );
+                        out.write( chunk );
                     }
                     out.flush();
-                    file = Optional.of(destination);
-                } catch (CascEntryNotFoundException e) {
+                    file = Optional.of( destination );
+                } 
+                catch ( CascEntryNotFoundException e ) {
                     file = Optional.empty();
                 }
-            } catch (IOException e) {
-                throw new CascExtractionException(format("Error while extraction CASC file to %s: %s", destination, e.getMessage()), e);
+            } 
+            catch ( IOException e ) {
+                throw new CascExtractionException(
+                        format( "Error while extraction CASC file to %s: %s", destination, e.getMessage() ), e );
             }
-        } else {
-            throw new CascExtractionException(format("Unable to extract a file to %s, the path already exists and is not a file or not writable.", destination));
+        } 
+        else {
+            throw new CascExtractionException( format(
+                    "Unable to extract a file to %s, the path already exists and is not a file or not writable.",
+                    destination ) );
         }
         return file;
     }
 
-    private boolean isWritableFile(Path file) {
-        return Files.notExists(file) || (Files.isRegularFile(file) && Files.isWritable(file));
+    private boolean isWritableFile( Path file ) {
+        return Files.notExists( file ) || ( Files.isRegularFile( file ) && Files.isWritable( file ) );
     }
 
-    private Path getExtractionFilename(long filenameHash) throws CascExtractionException {
-        return extractDir.resolve("unknown").resolve(byteArrayToHexString(toByteArray(filenameHash)));
+    /**
+     * "unknown" 경로에 파일이름해시 파일경로 구성
+     * @param filenameHash
+     * @return
+     * @throws CascExtractionException
+     */
+    private Path getExtractionFilename( long filenameHash ) throws CascExtractionException {
+        return extractDir.resolve( "unknown" ).resolve( byteArrayToHexString( toByteArray( filenameHash ) ) );
     }
 
-    private Path getExtractionFilename(String filename) throws CascExtractionException {
-        return extractDir.resolve(filename);
+    /**
+     * 추출용 파일경로 구성
+     * @param filename 에셋 파일명
+     * @return
+     * @throws CascExtractionException
+     */
+    private Path getExtractionFilename( String filename ) throws CascExtractionException {
+        return extractDir.resolve( filename );
     }
 }

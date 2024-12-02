@@ -27,30 +27,30 @@ import nl.salp.warcraft4j.Warcraft4jException;
  */
 public class CascException extends Warcraft4jException {
     /**
-     * Create  a new instance with an exception message.
+     * Create a new instance with an exception message.
      *
      * @param message The message.
      */
-    public CascException(String message) {
-        super(message);
+    public CascException( String message ) {
+        super( message );
     }
 
     /**
-     * Create  a new instance with an exception message and cause.
+     * Create a new instance with an exception message and cause.
      *
      * @param message The message.
      * @param cause   The cause.
      */
-    public CascException(String message, Throwable cause) {
-        super(message, cause);
+    public CascException( String message, Throwable cause ) {
+        super( message, cause );
     }
 
     /**
-     * Create  a new instance with a cause.
+     * Create a new instance with a cause.
      *
      * @param cause The cause.
      */
-    public CascException(Throwable cause) {
-        super(cause);
+    public CascException( Throwable cause ) {
+        super( cause );
     }
 }

@@ -24,13 +24,14 @@ package nl.salp.warcraft4j;
  * @author Barre Dijkstra
  */
 public class Warcraft4jException extends RuntimeException {
+    
     /**
      * Create a new instance with an exception message.
      *
      * @param message The exception message.
      */
-    public Warcraft4jException(String message) {
-        super(message);
+    public Warcraft4jException( String message ) {
+        super( message );
     }
 
     /**
@@ -39,8 +40,8 @@ public class Warcraft4jException extends RuntimeException {
      * @param message The exception message.
      * @param cause   The cause exception.
      */
-    public Warcraft4jException(String message, Throwable cause) {
-        super(message, cause);
+    public Warcraft4jException( String message, Throwable cause ) {
+        super( message, cause );
     }
 
     /**
@@ -48,7 +49,7 @@ public class Warcraft4jException extends RuntimeException {
      *
      * @param cause The cause exception.
      */
-    public Warcraft4jException(Throwable cause) {
-        super(cause);
+    public Warcraft4jException( Throwable cause ) {
+        super( cause );
     }
 }
