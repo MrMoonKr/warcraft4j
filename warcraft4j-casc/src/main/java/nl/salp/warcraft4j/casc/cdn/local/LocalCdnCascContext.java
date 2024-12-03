@@ -105,6 +105,7 @@ public class LocalCdnCascContext extends CdnCascContext {
     }
 
     /**
+     * "~/Data/data/" 디렉토리에서 "xxxxxxxxxx.idx" 파일들 파싱
      * {@inheritDoc}
      */
     @Override

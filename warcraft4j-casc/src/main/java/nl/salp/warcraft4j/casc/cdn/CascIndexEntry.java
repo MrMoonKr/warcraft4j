@@ -26,7 +26,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.Optional;
 
 /**
- * {@link IndexEntry} implementation for a CDN based CASC, relating a file key to a actual file (segment).
+ * ".idx" 파일내 저장된 실재 파일 데이터에 대한 정보 저장 클래스
+ * {@link IndexEntry} implementation for a CDN based CASC, 
+ * relating a file key to a actual file (segment).
  *
  * @author Barre Dijkstra
  * @see nl.salp.warcraft4j.casc.IndexEntry
@@ -53,9 +55,9 @@ public class CascIndexEntry implements IndexEntry {
      *
      * @throws IllegalArgumentException When invalid data was provided.
      */
-    public CascIndexEntry(FileKey fileKey, int fileNumber, int dataFileOffset, long fileSize) {
-        this.fileKey = Optional.ofNullable(fileKey)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to create a CascIndexEntry for a null file key."));
+    public CascIndexEntry( FileKey fileKey, int fileNumber, int dataFileOffset, long fileSize ) {
+        this.fileKey = Optional.ofNullable( fileKey ).orElseThrow(
+                () -> new IllegalArgumentException( "Unable to create a CascIndexEntry for a null file key." ) );
         this.fileSize = fileSize;
         this.fileNumber = fileNumber;
         this.dataFileOffset = dataFileOffset;
@@ -106,8 +108,8 @@ public class CascIndexEntry implements IndexEntry {
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public boolean equals( Object obj ) {
+        return EqualsBuilder.reflectionEquals( this, obj );
     }
 
     /**
@@ -115,6 +117,6 @@ public class CascIndexEntry implements IndexEntry {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return ToStringBuilder.reflectionToString( this );
     }
 }

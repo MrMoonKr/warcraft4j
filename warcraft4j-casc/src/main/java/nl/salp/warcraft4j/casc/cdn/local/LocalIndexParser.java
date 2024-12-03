@@ -60,18 +60,27 @@ public class LocalIndexParser {
     }
 
     /**
+     * "Data/data/xxxxxxxxxx.idx" 파일들을 파싱하고 {@link Index} 객체 생성 후 반환.
      * Read and parse all index files into a {@link Index}.
      *
      * @return The index.
      */
     public Index parse() {
+
         LOGGER.trace( "Parsing local index entries from {}.", installationDirectory );
-        Collection<Path> latestIndexFilePaths = getLatestIndexFilePaths();
-        List<LocalIndexFile> latestIndexFiles = latestIndexFilePaths.stream().map( LocalIndexParser::parse )
+
+        Collection<Path> latestIndexFilePaths = this.getLatestIndexFilePaths();
+        List<LocalIndexFile> latestIndexFiles = latestIndexFilePaths.stream()
+                .map( LocalIndexParser::parse )
                 .collect( Collectors.toList() );
-        List<IndexEntry> entries = latestIndexFiles.stream().map( LocalIndexFile::getEntries )
-                .flatMap( Collection::stream ).distinct().collect( Collectors.toList() );
+        List<IndexEntry> entries = latestIndexFiles.stream()
+                .map( LocalIndexFile::getEntries )
+                .flatMap( Collection::stream )
+                .distinct()
+                .collect( Collectors.toList() );
+
         LOGGER.trace( "Parsed {} index entries from {} index files.", entries.size(), latestIndexFiles.size() );
+
         return new Index( entries );
     }
 
@@ -83,7 +92,8 @@ public class LocalIndexParser {
     private static LocalIndexFile parse( Path path ) {
         try ( DataReader reader = new FileDataReader( path ) ) {
             LOGGER.debug( "Parsing index file {}", path );
-            return new LocalIndexFileParser( path, LocalIndexParser::parseFileNumber,
+            return new LocalIndexFileParser( path, 
+                    LocalIndexParser::parseFileNumber,
                     LocalIndexParser::parseFileVersion ).parse( reader );
         } 
         catch ( IOException e ) {
@@ -96,21 +106,27 @@ public class LocalIndexParser {
      *
      * @return The paths of the latest index file version.
      */
-    private Collection<Path> getLatestIndexFilePaths() {
-        try {
+    private Collection<Path> getLatestIndexFilePaths() 
+    {
+        try 
+        {
+            Path path = installationDirectory.resolve( Paths.get( "Data", "data" ) ); // "~/Data/data"
             IndexFileScanner scanner = new IndexFileScanner();
-            Path path = installationDirectory.resolve( Paths.get( "Data", "data" ) );
             Files.walkFileTree( path, scanner );
             Map<Integer, Path> latestFiles = new HashMap<>();
-            for ( Path p : scanner.getIndexFiles() ) {
+            List<Path> indexFiles = scanner.getIndexFiles();
+            for ( Path p : indexFiles ) {
                 int fileNum = parseFileNumber( p );
-                if ( !latestFiles.containsKey( fileNum )
-                        || parseFileVersion( p ) > parseFileNumber( latestFiles.get( fileNum ) ) ) {
+                if ( !latestFiles.containsKey( fileNum ) || 
+                        parseFileVersion( p ) > parseFileNumber( latestFiles.get( fileNum ) ) ) 
+                {
                     LOGGER.trace( "Using index file {} version {} instead of version {}", fileNum,
                             parseFileVersion( p ),
                             latestFiles.containsKey( fileNum ) ? parseFileVersion( latestFiles.get( fileNum ) ) : 0 );
+
                     latestFiles.put( fileNum, p );
-                } else {
+                } 
+                else {
                     LOGGER.trace( "Skipping index file {} version {} in favor of version {}", fileNum,
                             parseFileVersion( p ), parseFileVersion( latestFiles.get( fileNum ) ) );
                 }

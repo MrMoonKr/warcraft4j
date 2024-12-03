@@ -31,54 +31,57 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 /**
+ * 9바이트 파일키에 대한 파일인덱스 맵핑 테이블. 
  * TODO Document class.
  *
  * @author Barre Dijkstra
  */
 public class Index {
+
     /** The logger. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(Index.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger( Index.class );
+    /** 맵핑 테이블맵 */
     private final Map<FileKey, IndexEntry> entries;
 
-    public Index(Collection<IndexEntry> indexEntries) {
+    public Index( Collection<IndexEntry> indexEntries ) {
         this.entries = new HashMap<>();
-        Optional.ofNullable(indexEntries)
-                .orElseThrow(() -> new CascParsingException("Can't create a file index from null index entries."))
-                .forEach(this::addEntry);
+        Optional.ofNullable( indexEntries )
+                .orElseThrow( () -> new CascParsingException( "Can't create a file index from null index entries." ) )
+                .forEach( this::addEntry );
     }
 
-    private void addEntry(IndexEntry entry) {
-        if (!entries.containsKey(entry.getFileKey())) {
-            entries.put(entry.getFileKey(), entry);
+    private void addEntry( IndexEntry entry ) {
+        if ( !entries.containsKey( entry.getFileKey() ) ) {
+            entries.put( entry.getFileKey(), entry );
         }
     }
 
-    public Optional<IndexEntry> getEntry(FileKey fileKey) {
+    public Optional<IndexEntry> getEntry( FileKey fileKey ) {
         Checksum cs = fileKey;
-        if (cs.length() > 9) {
-            cs = fileKey.trim(9);
+        if ( cs.length() > 9 ) {
+            cs = fileKey.trim( 9 );
         }
-        return Optional.ofNullable(entries.get(cs));
+        return Optional.ofNullable( entries.get( cs ) );
     }
 
     public Collection<IndexEntry> getEntries() {
-        return Collections.unmodifiableCollection(entries.values());
+        return Collections.unmodifiableCollection( entries.values() );
     }
 
-    public Optional<Integer> getDataFileNumber(FileKey fileKey) {
-        return getEntry(fileKey).map(IndexEntry::getFileNumber);
+    public Optional<Integer> getDataFileNumber( FileKey fileKey ) {
+        return getEntry( fileKey ).map( IndexEntry::getFileNumber );
     }
 
-    public Optional<Integer> getDataOffset(FileKey fileKey) {
-        return getEntry(fileKey).map(IndexEntry::getDataFileOffset);
+    public Optional<Integer> getDataOffset( FileKey fileKey ) {
+        return getEntry( fileKey ).map( IndexEntry::getDataFileOffset );
     }
 
-    public Optional<Long> getDataSize(FileKey fileKey) {
-        return getEntry(fileKey).map(IndexEntry::getFileSize);
+    public Optional<Long> getDataSize( FileKey fileKey ) {
+        return getEntry( fileKey ).map( IndexEntry::getFileSize );
     }
 
     public Collection<FileKey> getFileKeys() {
-        return Collections.unmodifiableSet(entries.keySet());
+        return Collections.unmodifiableSet( entries.keySet() );
     }
 
     public int getEntryCount() {
@@ -87,18 +90,16 @@ public class Index {
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return HashCodeBuilder.reflectionHashCode( this );
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public boolean equals( Object obj ) {
+        return EqualsBuilder.reflectionEquals( this, obj );
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append("entries", entries.size())
-                .build();
+        return new ToStringBuilder( this ).append( "entries", entries.size() ).build();
     }
 }

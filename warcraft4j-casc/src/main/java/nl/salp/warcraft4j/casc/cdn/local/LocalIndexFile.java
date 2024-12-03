@@ -52,20 +52,18 @@ public class LocalIndexFile {
      *
      * @throws IllegalArgumentException When invalid data was provided.
      */
-    public LocalIndexFile(Path file, int fileNumber, int fileVersion, List<IndexEntry> entries) throws IllegalArgumentException {
-        this.file = Optional.ofNullable(file)
-                .orElseThrow(() -> new IllegalArgumentException("Can't create an LocalIndexFile instance for an empty file path."));
+    public LocalIndexFile( Path file, int fileNumber, int fileVersion, List<IndexEntry> entries )
+            throws IllegalArgumentException {
+        this.file = Optional.ofNullable( file ).orElseThrow( () -> new IllegalArgumentException(
+                "Can't create an LocalIndexFile instance for an empty file path." ) );
         this.fileNumber = fileNumber;
         this.fileVersion = fileVersion;
         this.entries = new HashMap<>();
-        entries.stream()
-                .filter(e -> e != null)
-                .filter(e -> e.getFileKey() != null)
-                .forEach(e -> {
-                    if (!this.entries.containsKey(e.getFileKey())) {
-                        this.entries.put(e.getFileKey(), e);
-                    }
-                });
+        entries.stream().filter( e -> e != null ).filter( e -> e.getFileKey() != null ).forEach( e -> {
+            if ( !this.entries.containsKey( e.getFileKey() ) ) {
+                this.entries.put( e.getFileKey(), e );
+            }
+        } );
     }
 
     /**
@@ -102,19 +100,21 @@ public class LocalIndexFile {
      *
      * @return Optional with the entry if one is available for the key.
      */
-    public Optional<IndexEntry> getEntry(FileKey fileKey) {
-        return Optional.ofNullable(entries.get(fileKey));
+    public Optional<IndexEntry> getEntry( FileKey fileKey ) {
+        return Optional.ofNullable( entries.get( fileKey ) );
     }
 
     /**
-     * Get the number of the data file that contains the file referenced by a file key.
+     * Get the number of the data file that contains the file referenced by a file
+     * key.
      *
      * @param fileKey The file key.
      *
-     * @return Optional with the data file number if a file is referenced by the file key.
+     * @return Optional with the data file number if a file is referenced by the
+     *         file key.
      */
-    public Optional<Integer> getDataFileNumber(FileKey fileKey) {
-        return getEntry(fileKey).map(IndexEntry::getFileNumber);
+    public Optional<Integer> getDataFileNumber( FileKey fileKey ) {
+        return getEntry( fileKey ).map( IndexEntry::getFileNumber );
     }
 
     /**
@@ -122,21 +122,24 @@ public class LocalIndexFile {
      *
      * @param fileKey The file key.
      *
-     * @return Optional with the data file offset if a file is referenced by the file key.
+     * @return Optional with the data file offset if a file is referenced by the
+     *         file key.
      */
-    public Optional<Integer> getDataOffset(FileKey fileKey) {
-        return getEntry(fileKey).map(IndexEntry::getDataFileOffset);
+    public Optional<Integer> getDataOffset( FileKey fileKey ) {
+        return getEntry( fileKey ).map( IndexEntry::getDataFileOffset );
     }
 
     /**
-     * Get the size of the data in the data file that contains the file referenced by a file key.
+     * Get the size of the data in the data file that contains the file referenced
+     * by a file key.
      *
      * @param fileKey The file key.
      *
-     * @return Optional with the size of the data in the data file number if a file is referenced by the file key.
+     * @return Optional with the size of the data in the data file number if a file
+     *         is referenced by the file key.
      */
-    public Optional<Long> getDataSize(FileKey fileKey) {
-        return getEntry(fileKey).map(IndexEntry::getFileSize);
+    public Optional<Long> getDataSize( FileKey fileKey ) {
+        return getEntry( fileKey ).map( IndexEntry::getFileSize );
     }
 
     /**
@@ -145,7 +148,7 @@ public class LocalIndexFile {
      * @return The entries.
      */
     public Collection<IndexEntry> getEntries() {
-        return Collections.unmodifiableCollection(entries.values());
+        return Collections.unmodifiableCollection( entries.values() );
     }
 
     /**
@@ -162,15 +165,15 @@ public class LocalIndexFile {
      */
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return HashCodeBuilder.reflectionHashCode( this );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public boolean equals( Object obj ) {
+        return EqualsBuilder.reflectionEquals( this, obj );
     }
 
     /**
@@ -178,6 +181,6 @@ public class LocalIndexFile {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return ToStringBuilder.reflectionToString( this );
     }
 }
