@@ -30,54 +30,62 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+
 /**
  * TODO Document class.
  *
  * @author Barre Dijkstra
  */
 public class Warcraft4jDev {
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Warcraft4jDev.class);
+
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger( Warcraft4jDev.class );
 
     public Warcraft4jDev() throws IOException {
-        DevToolsConfig config = DevToolsConfig.fromFile("w4j_devtools.config");
-        CdnCascContext cascContext = new LocalCdnCascContext(config);
-        ListFile.fromFile(config.getListFilePath()).getCascFiles().stream()
-                .filter(file -> file.getFilename().isPresent())
-                .forEach(file -> cascContext.resolve(file.getFilename().get().toUpperCase(), file.getFilenameHash()));
-        CascService cascService = new CdnCascService(cascContext);
+
+        DevToolsConfig config = DevToolsConfig.fromFile( "w4j_devtools.config" );
+
+        CdnCascContext cascContext = new LocalCdnCascContext( config );
+
+        ListFile.fromFile( config.getListFilePath() )
+                .getCascFiles()
+                .stream()
+                .filter( file -> file.getFilename().isPresent() )
+                .forEach( file -> cascContext.resolve( file.getFilename().get().toUpperCase(), file.getFilenameHash() ) );
+                
+        CascService cascService = new CdnCascService( cascContext );
         Logger logger = new Logger() {
 
             @Override
-            public void debug(String message, Object... args) {
-                LOGGER.debug(message, args);
+            public void debug( String message, Object... args ) {
+                LOGGER.debug( message, args );
             }
 
             @Override
-            public void warn(String message, Object... args) {
-                LOGGER.warn(message, args);
+            public void warn( String message, Object... args ) {
+                LOGGER.warn( message, args );
             }
 
             @Override
-            public void trace(String message, Object... args) {
-                LOGGER.trace(message, args);
+            public void trace( String message, Object... args ) {
+                LOGGER.trace( message, args );
             }
 
             @Override
-            public void error(String message, Object... args) {
-                LOGGER.error(message, args);
+            public void error( String message, Object... args ) {
+                LOGGER.error( message, args );
             }
         };
 
-        ExecutionContext context = new ExecutionContext(config, cascService, logger);
+        ExecutionContext context = new ExecutionContext( config, cascService, logger );
 
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        javax.swing.SwingUtilities.invokeLater( new Runnable() {
             public void run() {
-                new Warcraft4jFrame(context);
+                new Warcraft4jFrame( context );
             }
-        });
+        } );
     }
 
-    public static void main(String... args) throws IOException {
+    public static void main( String... args ) throws IOException {
         new Warcraft4jDev();
     }
 }

@@ -45,6 +45,7 @@ import static java.lang.String.format;
  * @see nl.salp.warcraft4j.casc.cdn.Index
  */
 public class LocalIndexParser {
+    
     /** The logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger( LocalIndexParser.class );
     /** The World of Warcraft installation directory. */

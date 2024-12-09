@@ -106,7 +106,7 @@ public class LocalIndexFileParser {
         int entryCount = ( dataLength / ENTRY_SIZE );
         LOGGER.trace( "Parsing {} index file entries from {} bytes at position {}", entryCount, dataLength,
                 reader.position() );
-        List<IndexEntry> entries = parseEntries( reader, entryCount );
+        List<IndexEntry> entries = this.parseEntries( reader, entryCount );
 
         int fileNumber = fileNumberFunction.apply( file );
         int fileVersion = fileVersionFunction.apply( file );
@@ -223,6 +223,7 @@ public class LocalIndexFileParser {
     }
 
     /**
+     * .idx 파일헤더
      * Header of the index file (version 2).
      */
     private static class IndexHeaderV2 {
@@ -232,13 +233,13 @@ public class LocalIndexFileParser {
         private final byte keyIndex;
         /** Empty byte */
         private final byte unknown1;
-        /** The size of the field with the file size in bytes. */
+        /** The size of the field with the file size in bytes. ( 4 bytes ) */
         private final byte spanSizeBytes;
-        /** The size of the field with the file offset in bytes. */
+        /** The size of the field with the file offset in bytes. ( 5 bytes : 10(index) + 30(offset) ) */
         private final byte spanOffsetBytes;
-        /** The size of the file key in bytes. */
+        /** The size of the file key in bytes. (9 bytes) */
         private final byte keyBytes;
-        /** Number of bits for the file offset (rest is archive index). */
+        /** Number of bits for the file offset (rest is archive index). ( 30 bits ) */
         private final byte segmentBits;
         /** The maximum file offset. */
         private final long maxFileOffset;

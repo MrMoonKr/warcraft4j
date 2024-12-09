@@ -34,6 +34,7 @@ import java.util.Optional;
  * @see nl.salp.warcraft4j.casc.IndexEntry
  */
 public class CascIndexEntry implements IndexEntry {
+
     /** The file key of the entry. */
     private final FileKey fileKey;
     /** The data file number containing the file. */
@@ -55,7 +56,8 @@ public class CascIndexEntry implements IndexEntry {
      *
      * @throws IllegalArgumentException When invalid data was provided.
      */
-    public CascIndexEntry( FileKey fileKey, int fileNumber, int dataFileOffset, long fileSize ) {
+    public CascIndexEntry( FileKey fileKey, int fileNumber, int dataFileOffset, long fileSize ) 
+    {
         this.fileKey = Optional.ofNullable( fileKey ).orElseThrow(
                 () -> new IllegalArgumentException( "Unable to create a CascIndexEntry for a null file key." ) );
         this.fileSize = fileSize;

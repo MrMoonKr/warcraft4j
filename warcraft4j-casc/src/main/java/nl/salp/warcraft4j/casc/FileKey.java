@@ -36,7 +36,7 @@ import static nl.salp.warcraft4j.util.DataTypeUtil.byteArrayToHexString;
 public class FileKey extends Checksum {
     /** The length of the checksum in bytes. */
     public static final int FILEKEY_LENGTH = 9;
-    /** File key. */
+    /** File key. 9 bytes */
     private final byte[] fileKey;
     /** The hash of the file key. */
     private final int hash;

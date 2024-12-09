@@ -42,6 +42,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * @author Barre Dijkstra
  */
 public class DevToolsConfig implements Warcraft4jConfig {
+
     private static final String WOW_REGION = "w4j.wow.region";
     private static final Region WOW_REGION_DEFAULT = Region.EUROPE;
     private static final String WOW_LOCALE = "w4j.wow.locale";
@@ -85,106 +86,129 @@ public class DevToolsConfig implements Warcraft4jConfig {
     private String mongodbUser;
     private String mongodbPassword;
 
-    public DevToolsConfig(Configuration configuration) {
-        initialise(configuration);
+    public DevToolsConfig( Configuration configuration ) {
+        initialise( configuration );
     }
 
-    private void initialise(Configuration configuration) {
-        if (configuration == null || configuration.isEmpty()) {
-            throw new Warcraft4jConfigException("Can't create a Warcraft4J configuration from an empty configuration.");
+    private void initialise( Configuration configuration ) {
+        if ( configuration == null || configuration.isEmpty() ) {
+            throw new Warcraft4jConfigException(
+                    "Can't create a Warcraft4J configuration from an empty configuration." );
         }
-        online = configuration.getBoolean(USE_CDN, USE_CDN_DEFAULT);
-        if (!configuration.containsKey(WOW_DIR)) {
-            throw new Warcraft4jConfigException("WoW installation directory was not configured.");
+        online = configuration.getBoolean( USE_CDN, USE_CDN_DEFAULT );
+        if ( !configuration.containsKey( WOW_DIR ) ) {
+            throw new Warcraft4jConfigException( "WoW installation directory was not configured." );
         }
-        wowDir = Paths.get(resolve(configuration.getString(WOW_DIR), configuration));
-        if (Files.notExists(wowDir) || !Files.isDirectory(wowDir) || !Files.isReadable(wowDir)) {
-            throw new Warcraft4jConfigException(format("WoW installation directory %s does not exist or can't be read.", wowDir));
+        wowDir = Paths.get( resolve( configuration.getString( WOW_DIR ), configuration ) );
+        if ( Files.notExists( wowDir ) || !Files.isDirectory( wowDir ) || !Files.isReadable( wowDir ) ) {
+            throw new Warcraft4jConfigException(
+                    format( "WoW installation directory %s does not exist or can't be read.", wowDir ) );
         }
-        w4jDir = Paths.get(resolve(configuration.getString(W4J_DIR), configuration));
-        if (Files.notExists(w4jDir)) {
+        w4jDir = Paths.get( resolve( configuration.getString( W4J_DIR ), configuration ) );
+        if ( Files.notExists( w4jDir ) ) {
             try {
-                Files.createDirectories(w4jDir);
-            } catch (IOException e) {
-                throw new Warcraft4jConfigException(format("Unable to create Warcraft4J working directory %s.", w4jDir), e);
+                Files.createDirectories( w4jDir );
+            } catch ( IOException e ) {
+                throw new Warcraft4jConfigException(
+                        format( "Unable to create Warcraft4J working directory %s.", w4jDir ), e );
             }
-        } else if (!Files.isDirectory(w4jDir) || !Files.isReadable(w4jDir) || !Files.isWritable(w4jDir)) {
-            throw new Warcraft4jConfigException(format("Warcraft4J working directory %s is either not a directory or not accessible.", w4jDir));
+        } else if ( !Files.isDirectory( w4jDir ) || !Files.isReadable( w4jDir ) || !Files.isWritable( w4jDir ) ) {
+            throw new Warcraft4jConfigException(
+                    format( "Warcraft4J working directory %s is either not a directory or not accessible.", w4jDir ) );
         }
 
-        listFile = Paths.get(resolve(configuration.getString(LISTFILE, LISTFILE_DEFAULT), configuration));
-        if (Files.notExists(listFile) || !Files.isRegularFile(listFile) || !Files.isReadable(listFile)) {
+        listFile = Paths.get( resolve( configuration.getString( LISTFILE, LISTFILE_DEFAULT ), configuration ) );
+        if ( Files.notExists( listFile ) || !Files.isRegularFile( listFile ) || !Files.isReadable( listFile ) ) {
             listFile = null;
         }
 
-        if (configuration.containsKey(DATA_EXTRACTED)) {
-            extractDataDir = Paths.get(resolve(configuration.getString(DATA_EXTRACTED), configuration));
-            if (Files.notExists(extractDataDir)) {
+        if ( configuration.containsKey( DATA_EXTRACTED ) ) {
+            extractDataDir = Paths.get( resolve( configuration.getString( DATA_EXTRACTED ), configuration ) );
+            if ( Files.notExists( extractDataDir ) ) {
                 try {
-                    Files.createDirectories(extractDataDir);
-                } catch (IOException e) {
-                    throw new Warcraft4jConfigException(format("Unable to create extracted directory %s.", w4jDir), e);
+                    Files.createDirectories( extractDataDir );
+                } catch ( IOException e ) {
+                    throw new Warcraft4jConfigException( format( "Unable to create extracted directory %s.", w4jDir ),
+                            e );
                 }
-            } else if (!Files.isDirectory(w4jDir) || !Files.isReadable(w4jDir) || !Files.isWritable(w4jDir)) {
-                throw new Warcraft4jConfigException(format("Extracted data directory %s is either not a directory or not accessible.", w4jDir));
+            } else if ( !Files.isDirectory( w4jDir ) || !Files.isReadable( w4jDir ) || !Files.isWritable( w4jDir ) ) {
+                throw new Warcraft4jConfigException(
+                        format( "Extracted data directory %s is either not a directory or not accessible.", w4jDir ) );
             }
         }
 
-        cache = configuration.getBoolean(CDN_CACHE, CDN_CACHE_DEFAULT);
-        if (cache) {
-            cacheDir = Paths.get(resolve(configuration.getString(CDN_CACHE_PATH, CDN_CACHE_PATH_DEFAULT), configuration));
-            if (Files.notExists(cacheDir)) {
+        cache = configuration.getBoolean( CDN_CACHE, CDN_CACHE_DEFAULT );
+        if ( cache ) {
+            cacheDir = Paths
+                    .get( resolve( configuration.getString( CDN_CACHE_PATH, CDN_CACHE_PATH_DEFAULT ), configuration ) );
+            if ( Files.notExists( cacheDir ) ) {
                 try {
-                    Files.createDirectories(cacheDir);
-                } catch (IOException e) {
-                    throw new Warcraft4jConfigException(format("Unable to create cache directory %s.", cacheDir), e);
+                    Files.createDirectories( cacheDir );
+                } catch ( IOException e ) {
+                    throw new Warcraft4jConfigException( format( "Unable to create cache directory %s.", cacheDir ),
+                            e );
                 }
-            } else if (!Files.isDirectory(cacheDir) || !Files.isReadable(cacheDir) || !Files.isWritable(cacheDir)) {
-                throw new Warcraft4jConfigException(format("Cache directory %s is either not a directory or not accessible.", cacheDir));
+            } else if ( !Files.isDirectory( cacheDir ) || !Files.isReadable( cacheDir )
+                    || !Files.isWritable( cacheDir ) ) {
+                throw new Warcraft4jConfigException(
+                        format( "Cache directory %s is either not a directory or not accessible.", cacheDir ) );
             }
         }
-        locale = Locale.getLocale(resolve(configuration.getString(WOW_LOCALE, valueOf(WOW_LOCALE_DEFAULT)), configuration))
-                .orElseThrow(() -> new Warcraft4jConfigException(format("Locale %s is not a valid locale.", resolve(configuration.getString(WOW_LOCALE), configuration))));
-        region = Region.getRegion(resolve(configuration.getString(WOW_REGION, valueOf(WOW_REGION_DEFAULT)), configuration))
-                .orElseThrow(() -> new Warcraft4jConfigException(format("Region %s is not a valid region.", resolve(configuration.getString(WOW_REGION), configuration))));
-        branch = Branch.getBranch(resolve(configuration.getString(WOW_BRANCH, valueOf(WOW_BRANCH_DEFAULT)), configuration))
-                .orElseThrow(() -> new Warcraft4jConfigException(format("Branch %s is not a valid branch.", resolve(configuration.getString(WOW_BRANCH), configuration))));
-        mongodbUri = configuration.getString(MONGODB_URI, null);
-        mongodbUser = configuration.getString(MONGODB_USER, null);
-        mongodbPassword = configuration.getString(MONGODB_PASSWORD, null);
-        if (configuration.containsKey(NEO4J_DATA_PATH)) {
-            neo4jDataPath = Paths.get(resolve(configuration.getString(NEO4J_DATA_PATH), configuration));
-            if (Files.notExists(neo4jDataPath)) {
+        locale = Locale
+                .getLocale(
+                        resolve( configuration.getString( WOW_LOCALE, valueOf( WOW_LOCALE_DEFAULT ) ), configuration ) )
+                .orElseThrow( () -> new Warcraft4jConfigException( format( "Locale %s is not a valid locale.",
+                        resolve( configuration.getString( WOW_LOCALE ), configuration ) ) ) );
+        region = Region
+                .getRegion(
+                        resolve( configuration.getString( WOW_REGION, valueOf( WOW_REGION_DEFAULT ) ), configuration ) )
+                .orElseThrow( () -> new Warcraft4jConfigException( format( "Region %s is not a valid region.",
+                        resolve( configuration.getString( WOW_REGION ), configuration ) ) ) );
+        branch = Branch
+                .getBranch(
+                        resolve( configuration.getString( WOW_BRANCH, valueOf( WOW_BRANCH_DEFAULT ) ), configuration ) )
+                .orElseThrow( () -> new Warcraft4jConfigException( format( "Branch %s is not a valid branch.",
+                        resolve( configuration.getString( WOW_BRANCH ), configuration ) ) ) );
+        mongodbUri = configuration.getString( MONGODB_URI, null );
+        mongodbUser = configuration.getString( MONGODB_USER, null );
+        mongodbPassword = configuration.getString( MONGODB_PASSWORD, null );
+        if ( configuration.containsKey( NEO4J_DATA_PATH ) ) {
+            neo4jDataPath = Paths.get( resolve( configuration.getString( NEO4J_DATA_PATH ), configuration ) );
+            if ( Files.notExists( neo4jDataPath ) ) {
                 try {
-                    Files.createDirectories(neo4jDataPath);
-                } catch (IOException e) {
-                    throw new Warcraft4jConfigException(format("Unable to create Neo4J data directory %s.", neo4jDataPath), e);
+                    Files.createDirectories( neo4jDataPath );
+                } catch ( IOException e ) {
+                    throw new Warcraft4jConfigException(
+                            format( "Unable to create Neo4J data directory %s.", neo4jDataPath ), e );
                 }
-            } else if (!Files.isDirectory(neo4jDataPath) || !Files.isReadable(neo4jDataPath) || !Files.isWritable(neo4jDataPath)) {
-                throw new Warcraft4jConfigException(format("Neo4J data directory %s is either not a directory or not accessible.", neo4jDataPath));
+            } else if ( !Files.isDirectory( neo4jDataPath ) || !Files.isReadable( neo4jDataPath )
+                    || !Files.isWritable( neo4jDataPath ) ) {
+                throw new Warcraft4jConfigException( format(
+                        "Neo4J data directory %s is either not a directory or not accessible.", neo4jDataPath ) );
             }
         }
-        neo4jExtUri = configuration.getString(NEO4J_EXT_URI, null);
-        neo4jExtUser = configuration.getString(NEO4J_EXT_USER, null);
-        neo4jExtPassword = configuration.getString(NEO4J_EXT_PASSWORD, null);
+        neo4jExtUri = configuration.getString( NEO4J_EXT_URI, null );
+        neo4jExtUser = configuration.getString( NEO4J_EXT_USER, null );
+        neo4jExtPassword = configuration.getString( NEO4J_EXT_PASSWORD, null );
     }
 
-    private String resolve(String value, Configuration configuration) {
+    private String resolve( String value, Configuration configuration ) {
         String resolvedValue = value;
-        if (isNotEmpty(value)) {
-            int searchIndex = resolvedValue.indexOf("${");
-            while (searchIndex < resolvedValue.length() - 2 && searchIndex > -1) {
-                int end = resolvedValue.indexOf("}", searchIndex) + 1;
-                if (end > -1) {
-                    String replaceKey = resolvedValue.substring(searchIndex + 2, end - 1);
-                    if (configuration.containsKey(replaceKey)) {
-                        resolvedValue = resolvedValue.substring(0, searchIndex) + configuration.getString(replaceKey) + resolvedValue.substring(end);
-                        searchIndex = resolvedValue.indexOf("${", searchIndex);
+        if ( isNotEmpty( value ) ) {
+            int searchIndex = resolvedValue.indexOf( "${" );
+            while ( searchIndex < resolvedValue.length() - 2 && searchIndex > -1 ) {
+                int end = resolvedValue.indexOf( "}", searchIndex ) + 1;
+                if ( end > -1 ) {
+                    String replaceKey = resolvedValue.substring( searchIndex + 2, end - 1 );
+                    if ( configuration.containsKey( replaceKey ) ) {
+                        resolvedValue = resolvedValue.substring( 0, searchIndex )
+                                + configuration.getString( replaceKey ) + resolvedValue.substring( end );
+                        searchIndex = resolvedValue.indexOf( "${", searchIndex );
                     } else {
-                        searchIndex = resolvedValue.indexOf("${", end);
+                        searchIndex = resolvedValue.indexOf( "${", end );
                     }
                 } else {
-                    searchIndex = resolvedValue.indexOf("${", searchIndex + 2);
+                    searchIndex = resolvedValue.indexOf( "${", searchIndex + 2 );
                 }
             }
         }
@@ -259,7 +283,7 @@ public class DevToolsConfig implements Warcraft4jConfig {
     }
 
     public boolean isNeo4jExternal() {
-        return !isNeo4jEmbedded() && isNotEmpty(neo4jExtUri);
+        return !isNeo4jEmbedded() && isNotEmpty( neo4jExtUri );
     }
 
     public String getNeo4jExtPassword() {
@@ -275,7 +299,7 @@ public class DevToolsConfig implements Warcraft4jConfig {
     }
 
     public boolean isMongodbConfigured() {
-        return isNotEmpty(mongodbUri);
+        return isNotEmpty( mongodbUri );
     }
 
     public String getMongodbPassword() {
@@ -292,15 +316,22 @@ public class DevToolsConfig implements Warcraft4jConfig {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return ToStringBuilder.reflectionToString( this );
     }
 
-    public static DevToolsConfig fromFile(String configFile) throws Warcraft4jConfigException {
+    /**
+     * resources 폴더내 w4j_devtools.config 파일을 불러오기 위한 함수
+     * @param configFile
+     * @return
+     * @throws Warcraft4jConfigException
+     */
+    public static DevToolsConfig fromFile( String configFile ) throws Warcraft4jConfigException {
         try {
 
-            return new DevToolsConfig(new PropertiesConfiguration(configFile));
-        } catch (org.apache.commons.configuration.ConfigurationException e) {
-            throw new Warcraft4jConfigException(format("Error creating Warcraft4J development tools configuration from %s", configFile), e);
+            return new DevToolsConfig( new PropertiesConfiguration( configFile ) );
+        } catch ( org.apache.commons.configuration.ConfigurationException e ) {
+            throw new Warcraft4jConfigException(
+                    format( "Error creating Warcraft4J development tools configuration from %s", configFile ), e );
         }
     }
 }

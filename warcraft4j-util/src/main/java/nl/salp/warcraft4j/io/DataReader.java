@@ -30,7 +30,7 @@ import java.nio.ByteOrder;
  *
  * @author Barre Dijkstra
  */
-public interface DataReader extends Closeable, AutoCloseable {
+public interface DataReader extends Closeable {
     /**
      * Get the current position of the underlying data.
      *

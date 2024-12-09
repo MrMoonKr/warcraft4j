@@ -42,14 +42,17 @@ import java.util.function.Supplier;
  * @author Barre Dijkstra
  * @see CdnCascConfig
  */
-public class LocalCdnCascConfig extends BaseCdnCascConfig implements CdnCascConfig {
+public class LocalCdnCascConfig extends BaseCdnCascConfig {
     /** The logger instance. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalCdnCascConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger( LocalCdnCascConfig.class );
     /** The filename of the {@code build info} file. */
     private static final String FILENAME_BUILDINFO = ".build.info";
     /** The {@code build info} key for the configuration being active. */
     private static final String KEY_BUILDINFO_ACTIVE = "Active";
-    /** The {@code build info} key for {@code Armadillo} (I have no clue either... ;-)). */
+    /**
+     * The {@code build info} key for {@code Armadillo} (I have no clue either...
+     * ;-)).
+     */
     private static final String KEY_BUILDINFO_ARMADILLO = "Armadillo";
     /** The {@code build info} key for the {@code build} key. */
     private static final String KEY_BUILDINFO_BUILD = "Build Key";
@@ -65,7 +68,10 @@ public class LocalCdnCascConfig extends BaseCdnCascConfig implements CdnCascConf
     private static final String KEY_BUILDINFO_IM_SIZE = "IM Size";
     /** The {@code build info} key for the {@code install} key. */
     private static final String KEY_BUILDINFO_INSTALL = "Install Key";
-    /** The {@code build info} key for the data when the configuration was last activated. */
+    /**
+     * The {@code build info} key for the data when the configuration was last
+     * activated.
+     */
     private static final String KEY_BUILDINFO_LAST_ACTIVATION = "Last Activated";
     /** The {@code build info} key for the region. */
     private static final String KEY_BUILDINFO_REGION = "Branch";
@@ -80,11 +86,13 @@ public class LocalCdnCascConfig extends BaseCdnCascConfig implements CdnCascConf
     /**
      * Create a new instance.
      *
-     * @param warcraft4jConfig   The {@link Warcraft4jConfig} instance to configure the CDN CASC configuration with.
-     * @param dataReaderProvider The {@link DataReaderProvider} for reading the configuration files.
+     * @param warcraft4jConfig   The {@link Warcraft4jConfig} instance to configure
+     *                           the CDN CASC configuration with.
+     * @param dataReaderProvider The {@link DataReaderProvider} for reading the
+     *                           configuration files.
      */
-    public LocalCdnCascConfig(Warcraft4jConfig warcraft4jConfig, DataReaderProvider dataReaderProvider) {
-        super(warcraft4jConfig, dataReaderProvider);
+    public LocalCdnCascConfig( Warcraft4jConfig warcraft4jConfig, DataReaderProvider dataReaderProvider ) {
+        super( warcraft4jConfig, dataReaderProvider );
     }
 
     /**
@@ -93,23 +101,25 @@ public class LocalCdnCascConfig extends BaseCdnCascConfig implements CdnCascConf
      * @return The parsed {@code build info} configuration.
      */
     private KeyBasedConfiguration getBuildInfo() {
-        if (buildInfo == null) {
-            String path = getWarcraft4jConfig().getWowInstallationDirectory().resolve(FILENAME_BUILDINFO).toString();
-            LOGGER.debug("Initialising build info from file {}", path);
-            buildInfo = KeyBasedConfiguration.tableConfig(getDataReader(path));
+        if ( buildInfo == null ) {
+            String path = getWarcraft4jConfig().getWowInstallationDirectory().resolve( FILENAME_BUILDINFO ).toString();
+            LOGGER.debug( "Initialising build info from file {}", path );
+            buildInfo = KeyBasedConfiguration.tableConfig( getDataReader( path ) );
         }
         return buildInfo;
     }
 
     /**
-     * Get a value from the parsed {@code build info} configuration for the configuration region.
+     * Get a value from the parsed {@code build info} configuration for the
+     * configuration region.
      *
      * @param key The key to get the value for.
      *
-     * @return Optional containing the value if the key and region combination is available.
+     * @return Optional containing the value if the key and region combination is
+     *         available.
      */
-    private Optional<String> getBuildInfoValue(String key) {
-        return getIndexedValue(getBuildInfo(), key, KEY_BUILDINFO_REGION, getRegionCode());
+    private Optional<String> getBuildInfoValue( String key ) {
+        return getIndexedValue( getBuildInfo(), key, KEY_BUILDINFO_REGION, getRegionCode() );
     }
 
     /**
@@ -117,7 +127,7 @@ public class LocalCdnCascConfig extends BaseCdnCascConfig implements CdnCascConf
      */
     @Override
     public Optional<String> getBuildConfigKey() {
-        return getBuildInfoValue(KEY_BUILDINFO_BUILD);
+        return getBuildInfoValue( KEY_BUILDINFO_BUILD );
     }
 
     /**
@@ -125,16 +135,17 @@ public class LocalCdnCascConfig extends BaseCdnCascConfig implements CdnCascConf
      */
     @Override
     public Optional<String> getCdnConfigKey() {
-        return getBuildInfoValue(KEY_BUILDINFO_CDN);
+        return getBuildInfoValue( KEY_BUILDINFO_CDN );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected Supplier<DataReader> getConfigDataReader(String checksum) {
-        Path path = getWarcraft4jConfig().getWowInstallationDirectory().resolve(Paths.get("Data", "config", checksum.substring(0, 2), checksum.substring(2, 4), checksum));
-        return () -> new FileDataReader(path);
+    protected Supplier<DataReader> getConfigDataReader( String checksum ) {
+        Path path = getWarcraft4jConfig().getWowInstallationDirectory().resolve(
+                Paths.get( "Data", "config", checksum.substring( 0, 2 ), checksum.substring( 2, 4 ), checksum ) );
+        return () -> new FileDataReader( path );
     }
 
     /**
@@ -142,8 +153,7 @@ public class LocalCdnCascConfig extends BaseCdnCascConfig implements CdnCascConf
      */
     @Override
     public List<String> getAvailableRegions() {
-        return getBuildInfo().getValues(KEY_BUILDINFO_REGION)
-                .orElse(Collections.emptyList());
+        return getBuildInfo().getValues( KEY_BUILDINFO_REGION ).orElse( Collections.emptyList() );
     }
 
     /**
@@ -151,12 +161,11 @@ public class LocalCdnCascConfig extends BaseCdnCascConfig implements CdnCascConf
      */
     @Override
     public String getCdnUrl() {
-        String host = getBuildInfo().getFirstValue(KEY_BUILDINFO_CDN_HOSTS)
-                .map(s -> s.split(" ")[0])
-                .orElseThrow(() -> new CascParsingException("No CDN host(s) available."));
-        String path = getBuildInfo().getFirstValue(KEY_BUILDINFO_CDN_PATH)
-                .orElseThrow(() -> new CascParsingException("No CDN path available."));
-        return String.format("http://%s%s", host, path);
+        String host = getBuildInfo().getFirstValue( KEY_BUILDINFO_CDN_HOSTS ).map( s -> s.split( " " )[0] )
+                .orElseThrow( () -> new CascParsingException( "No CDN host(s) available." ) );
+        String path = getBuildInfo().getFirstValue( KEY_BUILDINFO_CDN_PATH )
+                .orElseThrow( () -> new CascParsingException( "No CDN path available." ) );
+        return String.format( "http://%s%s", host, path );
     }
 
     /**
@@ -164,7 +173,7 @@ public class LocalCdnCascConfig extends BaseCdnCascConfig implements CdnCascConf
      */
     @Override
     public String getVersion() {
-        return getBuildInfo().getFirstValue(KEY_BUILDINFO_VERSION)
-                .orElseThrow(() -> new CascParsingException("No version available."));
+        return getBuildInfo().getFirstValue( KEY_BUILDINFO_VERSION )
+                .orElseThrow( () -> new CascParsingException( "No version available." ) );
     }
 }

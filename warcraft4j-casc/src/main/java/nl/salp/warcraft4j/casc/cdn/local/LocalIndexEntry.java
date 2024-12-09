@@ -22,12 +22,14 @@ import nl.salp.warcraft4j.casc.FileKey;
 import nl.salp.warcraft4j.casc.cdn.CascIndexEntry;
 
 /**
+ * ".idx" 파일내 저장된 실재 파일 데이터에 대한 정보 저장 클래스
  * {@link CascIndexEntry} implementation for a local CDN CASC.
  *
  * @author Barre Dijkstra
  * @see nl.salp.warcraft4j.casc.cdn.CascIndexEntry
  */
 public class LocalIndexEntry extends CascIndexEntry {
+
     /** The high bits of the index file information. */
     private final short indexInfoHigh;
     /** The low bits of the index file information. */
@@ -41,8 +43,9 @@ public class LocalIndexEntry extends CascIndexEntry {
      * @param indexInfoLow  The low bits of the index file information.
      * @param fileSize      The size of the referenced file.
      */
-    public LocalIndexEntry(FileKey fileKey, short indexInfoHigh, long indexInfoLow, long fileSize) {
-        super(fileKey, getFileNumber(indexInfoHigh, indexInfoLow), getDataFileOffset(indexInfoHigh, indexInfoLow), fileSize);
+    public LocalIndexEntry( FileKey fileKey, short indexInfoHigh, long indexInfoLow, long fileSize ) {
+        super( fileKey, getFileNumber( indexInfoHigh, indexInfoLow ), getDataFileOffset( indexInfoHigh, indexInfoLow ),
+                fileSize );
         this.indexInfoHigh = indexInfoHigh;
         this.indexInfoLow = indexInfoLow;
     }
@@ -66,26 +69,28 @@ public class LocalIndexEntry extends CascIndexEntry {
     }
 
     /**
-     * Get the file number.
+     * 10비트 조합해서 data.xxx 파일의 파일번호을 구하기. 
+     * Get the file number.  
      *
      * @param indexInfoHigh The high bits of the index file information.
      * @param indexInfoLow  The low bits of the index file information.
      *
      * @return The file number for the index entry.
      */
-    private static int getFileNumber(short indexInfoHigh, long indexInfoLow) {
-        return ((byte) (indexInfoHigh << 2) | (((int) indexInfoLow & 0xC0000000) >>> 30));
+    private static int getFileNumber( short indexInfoHigh, long indexInfoLow ) {
+        return ( ( byte )( indexInfoHigh << 2 ) | ( ( ( int )indexInfoLow & 0xC0000000 ) >>> 30 ) );
     }
 
     /**
-     * Get the data file offset.
+     * 30비트 조합해서 data.xxx 파일의 파일예상 위치를 구하기.
+     * Get the data file offset.  
      *
      * @param indexInfoHigh The high bits of the index file information.
      * @param indexInfoLow  The low bits of the index file information.
      *
      * @return The data file offset.
      */
-    private static int getDataFileOffset(short indexInfoHigh, long indexInfoLow) {
-        return (int) (indexInfoLow & 0x3FFFFFFF);
+    private static int getDataFileOffset( short indexInfoHigh, long indexInfoLow ) {
+        return ( int )( indexInfoLow & 0x3FFFFFFF );
     }
 }

@@ -34,6 +34,7 @@ import java.util.stream.Stream;
  * @author Barre Dijkstra
  */
 public class CascFileTree implements TreeSelectionListener {
+    
     private final ExecutionContext context;
     private final CascFileTreeModel treeModel;
     private final JTree tree;

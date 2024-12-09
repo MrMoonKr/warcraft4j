@@ -21,6 +21,7 @@ package nl.salp.warcraft4j.casc;
 import java.util.Optional;
 
 /**
+ * 데이터파일내 저장된 에셋파일의 인터페이스.  
  * General information of a file stored in a CASC.
  *
  * @author Barre Dijkstra

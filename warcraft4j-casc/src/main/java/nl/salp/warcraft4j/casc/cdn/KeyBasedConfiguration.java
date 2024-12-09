@@ -41,10 +41,13 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  */
 public class KeyBasedConfiguration {
     /** The logger instance. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseCdnCascConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger( BaseCdnCascConfig.class );
     /** The configuration parser to use. */
     private final ConfigParser configParser;
-    /** The supplier for the {@link DataReader} to use to read the configuration file. */
+    /**
+     * The supplier for the {@link DataReader} to use to read the configuration
+     * file.
+     */
     private final Supplier<DataReader> dataReaderSupplier;
     /** The parsed values. */
     private Map<String, List<String>> values;
@@ -53,43 +56,44 @@ public class KeyBasedConfiguration {
      * Create a new instance.
      *
      * @param configParser       The parser for the configuration file.
-     * @param dataReaderSupplier The supplier for the {@link DataReader} to use to read the configuration file.
+     * @param dataReaderSupplier The supplier for the {@link DataReader} to use to
+     *                           read the configuration file.
      *
-     * @throws IllegalArgumentException When an invalid parser or data reader have been provided.
+     * @throws IllegalArgumentException When an invalid parser or data reader have
+     *                                  been provided.
      */
-    public KeyBasedConfiguration(ConfigParser configParser, Supplier<DataReader> dataReaderSupplier) {
-        this.configParser = Optional.ofNullable(configParser)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to create a configuration instance with a null parser."));
-        this.dataReaderSupplier = Optional.ofNullable(dataReaderSupplier)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to create a configuration instance with a null DataReader supplier."));
+    public KeyBasedConfiguration( ConfigParser configParser, Supplier<DataReader> dataReaderSupplier ) {
+        this.configParser = Optional.ofNullable( configParser ).orElseThrow(
+                () -> new IllegalArgumentException( "Unable to create a configuration instance with a null parser." ) );
+        this.dataReaderSupplier = Optional.ofNullable( dataReaderSupplier )
+                .orElseThrow( () -> new IllegalArgumentException(
+                        "Unable to create a configuration instance with a null DataReader supplier." ) );
     }
 
     /**
-     * Safe get the first entry from a list, allowing for empty and {@code null} lists.
+     * Safe get the first entry from a list, allowing for empty and {@code null}
+     * lists.
      *
      * @param list The list to get the entry from.
      * @param <T>  The type of the entry.
      *
      * @return Optional containing the first entry of the list if available.
      */
-    private static <T> Optional<T> getFirstEntry(List<T> list) {
-        return Optional.ofNullable(list)
-                .filter(l -> !l.isEmpty())
-                .map(l -> l.get(0));
+    private static <T> Optional<T> getFirstEntry( List<T> list ) {
+        return Optional.ofNullable( list ).filter( l -> !l.isEmpty() ).map( l -> l.get( 0 ) );
     }
 
     /**
-     * Safe get the last entry from a list, allowing for empty and {@code null} lists.
+     * Safe get the last entry from a list, allowing for empty and {@code null}
+     * lists.
      *
      * @param list The list to get the entry from.
      * @param <T>  The type of the entry.
      *
      * @return Optional containing the last entry of the list if available.
      */
-    private static <T> Optional<T> getLastEntry(List<T> list) {
-        return Optional.ofNullable(list)
-                .filter(l -> !l.isEmpty())
-                .map(l -> l.get(l.size() - 1));
+    private static <T> Optional<T> getLastEntry( List<T> list ) {
+        return Optional.ofNullable( list ).filter( l -> !l.isEmpty() ).map( l -> l.get( l.size() - 1 ) );
 
     }
 
@@ -102,36 +106,38 @@ public class KeyBasedConfiguration {
      *
      * @return The list of the transformed strings.
      */
-    private static <T> List<T> transform(List<String> strings, Function<String, T> transformer) {
-        return strings.stream()
-                .map(transformer)
-                .collect(Collectors.toList());
+    private static <T> List<T> transform( List<String> strings, Function<String, T> transformer ) {
+        return strings.stream().map( transformer ).collect( Collectors.toList() );
     }
 
     /**
      * Get a configuration instance based on key/(multi-) value pairs.
      *
-     * @param dataReaderSupplier The supplier for the {@link DataReader} to use to read the configuration file.
+     * @param dataReaderSupplier The supplier for the {@link DataReader} to use to
+     *                           read the configuration file.
      *
      * @return The configuration instance.
      *
      * @throws IllegalArgumentException When no datareader supplier was provided.
      */
-    public static KeyBasedConfiguration keyValueConfig(Supplier<DataReader> dataReaderSupplier) throws IllegalArgumentException {
-        return new KeyBasedConfiguration(new KeyValueConfigParser(), dataReaderSupplier);
+    public static KeyBasedConfiguration keyValueConfig( Supplier<DataReader> dataReaderSupplier )
+            throws IllegalArgumentException {
+        return new KeyBasedConfiguration( new KeyValueConfigParser(), dataReaderSupplier );
     }
 
     /**
      * Get a configuration instance based on a table with header.
      *
-     * @param dataReaderSupplier The supplier for the {@link DataReader} to use to read the configuration file.
+     * @param dataReaderSupplier The supplier for the {@link DataReader} to use to
+     *                           read the configuration file.
      *
      * @return The configuration instance.
      *
      * @throws IllegalArgumentException When no datareader supplier was provided.
      */
-    public static KeyBasedConfiguration tableConfig(Supplier<DataReader> dataReaderSupplier) throws IllegalArgumentException {
-        return new KeyBasedConfiguration(new TableConfigParser(), dataReaderSupplier);
+    public static KeyBasedConfiguration tableConfig( Supplier<DataReader> dataReaderSupplier )
+            throws IllegalArgumentException {
+        return new KeyBasedConfiguration( new TableConfigParser(), dataReaderSupplier );
     }
 
     /**
@@ -142,11 +148,11 @@ public class KeyBasedConfiguration {
      * @throws CascParsingException When parsing of the configuration file failed.
      */
     private Map<String, List<String>> values() throws CascParsingException {
-        if (values == null) {
-            try (DataReader reader = dataReaderSupplier.get()) {
-                values = configParser.parse(reader);
-            } catch (IOException e) {
-                throw new CascParsingException("Error parsing configuration file", e);
+        if ( values == null ) {
+            try ( DataReader reader = dataReaderSupplier.get() ) {
+                values = configParser.parse( reader );
+            } catch ( IOException e ) {
+                throw new CascParsingException( "Error parsing configuration file", e );
             }
         }
         return values;
@@ -158,7 +164,7 @@ public class KeyBasedConfiguration {
      * @return The keys.
      */
     public Set<String> keys() {
-        return Collections.unmodifiableSet(values().keySet());
+        return Collections.unmodifiableSet( values().keySet() );
     }
 
     /**
@@ -168,10 +174,8 @@ public class KeyBasedConfiguration {
      *
      * @return The number of values for the key.
      */
-    public int getEntryCount(String key) {
-        return getValues(key)
-                .map(List::size)
-                .orElse(0);
+    public int getEntryCount( String key ) {
+        return getValues( key ).map( List::size ).orElse( 0 );
     }
 
     /**
@@ -179,11 +183,11 @@ public class KeyBasedConfiguration {
      *
      * @param key The key.
      *
-     * @return Optional with the values for the key if the key is present in the configuration.
+     * @return Optional with the values for the key if the key is present in the
+     *         configuration.
      */
-    public Optional<List<String>> getValues(String key) {
-        return Optional.ofNullable(values())
-                .map(m -> m.get(key));
+    public Optional<List<String>> getValues( String key ) {
+        return Optional.ofNullable( values() ).map( m -> m.get( key ) );
     }
 
     /**
@@ -195,10 +199,9 @@ public class KeyBasedConfiguration {
      *
      * @return Optional with the value of the key if available.
      */
-    public Optional<String> getValue(String key, String idKey, String idValue) {
-        return getIndex(idKey, idValue)
-                .filter(i -> values().containsKey(key) && values().get(key).size() > i)
-                .map(i -> values().get(key).get(i));
+    public Optional<String> getValue( String key, String idKey, String idValue ) {
+        return getIndex( idKey, idValue ).filter( i -> values().containsKey( key ) && values().get( key ).size() > i )
+                .map( i -> values().get( key ).get( i ) );
     }
 
     /**
@@ -209,10 +212,9 @@ public class KeyBasedConfiguration {
      *
      * @return Optional with the value if available.
      */
-    public Optional<String> getValue(String key, int index) {
-        return Optional.ofNullable(values().get(key))
-                .filter(values -> values.size() > index)
-                .map(values -> values.get(index));
+    public Optional<String> getValue( String key, int index ) {
+        return Optional.ofNullable( values().get( key ) ).filter( values -> values.size() > index )
+                .map( values -> values.get( index ) );
     }
 
     /**
@@ -223,13 +225,13 @@ public class KeyBasedConfiguration {
      *
      * @return Optional with the index if the value is available for the key.
      */
-    public Optional<Integer> getIndex(String idKey, String idValue) {
+    public Optional<Integer> getIndex( String idKey, String idValue ) {
         Optional<Integer> idx = Optional.empty();
-        if (isNotEmpty(idKey) && isNotEmpty(idValue)) {
-            List<String> vals = values().getOrDefault(idKey, Collections.emptyList());
-            for (int i = 0; i < vals.size(); i++) {
-                if (idValue.equals(vals.get(i))) {
-                    idx = Optional.of(i);
+        if ( isNotEmpty( idKey ) && isNotEmpty( idValue ) ) {
+            List<String> vals = values().getOrDefault( idKey, Collections.emptyList() );
+            for ( int i = 0; i < vals.size(); i++ ) {
+                if ( idValue.equals( vals.get( i ) ) ) {
+                    idx = Optional.of( i );
                     break;
                 }
             }
@@ -242,11 +244,11 @@ public class KeyBasedConfiguration {
      *
      * @param key The key.
      *
-     * @return Optional with the first value if the key is present and has at least 1 value.
+     * @return Optional with the first value if the key is present and has at least
+     *         1 value.
      */
-    public Optional<String> getFirstValue(String key) {
-        return getValues(key)
-                .flatMap(KeyBasedConfiguration::getFirstEntry);
+    public Optional<String> getFirstValue( String key ) {
+        return getValues( key ).flatMap( KeyBasedConfiguration::getFirstEntry );
     }
 
     /**
@@ -258,10 +260,8 @@ public class KeyBasedConfiguration {
      *
      * @return Optional of the transformed value if for the key.
      */
-    public <T> Optional<T> getFirstValue(String key, Function<String, T> transformer) {
-        return getValues(key)
-                .flatMap(KeyBasedConfiguration::getFirstEntry)
-                .map(transformer);
+    public <T> Optional<T> getFirstValue( String key, Function<String, T> transformer ) {
+        return getValues( key ).flatMap( KeyBasedConfiguration::getFirstEntry ).map( transformer );
     }
 
     /**
@@ -269,11 +269,11 @@ public class KeyBasedConfiguration {
      *
      * @param key The key.
      *
-     * @return Optional with the last value if the key is present and has at least 1 value.
+     * @return Optional with the last value if the key is present and has at least 1
+     *         value.
      */
-    public Optional<String> getLastValue(String key) {
-        return getValues(key)
-                .flatMap(KeyBasedConfiguration::getLastEntry);
+    public Optional<String> getLastValue( String key ) {
+        return getValues( key ).flatMap( KeyBasedConfiguration::getLastEntry );
     }
 
     /**
@@ -285,10 +285,8 @@ public class KeyBasedConfiguration {
      *
      * @return Optional of the transformed value if for the key.
      */
-    public <T> Optional<T> getLastValue(String key, Function<String, T> transformer) {
-        return getValues(key)
-                .flatMap(KeyBasedConfiguration::getLastEntry)
-                .map(transformer);
+    public <T> Optional<T> getLastValue( String key, Function<String, T> transformer ) {
+        return getValues( key ).flatMap( KeyBasedConfiguration::getLastEntry ).map( transformer );
     }
 
     /**
@@ -300,9 +298,8 @@ public class KeyBasedConfiguration {
      *
      * @return Optional of the transformed values if the key is present.
      */
-    public <T> Optional<List<T>> getValues(String key, Function<String, T> transformer) {
-        return getValues(key)
-                .map(v -> transform(v, transformer));
+    public <T> Optional<List<T>> getValues( String key, Function<String, T> transformer ) {
+        return getValues( key ).map( v -> transform( v, transformer ) );
     }
 
     /**
@@ -310,7 +307,7 @@ public class KeyBasedConfiguration {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return ToStringBuilder.reflectionToString( this );
     }
 
     /**
@@ -327,27 +324,28 @@ public class KeyBasedConfiguration {
          * @throws IOException          When reading the data failed.
          * @throws CascParsingException When the data could not be parsed.
          */
-        Map<String, List<String>> parse(DataReader reader) throws IOException, CascParsingException;
+        Map<String, List<String>> parse( DataReader reader ) throws IOException, CascParsingException;
     }
 
     /**
-     * {@link ConfigParser} for parsing key-value based data with support for space seperated multi-values.
+     * {@link ConfigParser} for parsing key-value based data with support for space
+     * seperated multi-values.
      */
     static class KeyValueConfigParser implements ConfigParser {
         /**
          * {@inheritDoc}
          */
         @Override
-        public Map<String, List<String>> parse(DataReader reader) throws IOException, CascParsingException {
+        public Map<String, List<String>> parse( DataReader reader ) throws IOException, CascParsingException {
             Map<String, List<String>> values = new HashMap<>();
-            while (reader.hasRemaining()) {
-                String line = reader.readNext(DataTypeFactory.getStringLine()).trim();
-                if (!line.isEmpty() && !line.startsWith("#")) {
-                    String[] tokens = line.split("=");
+            while ( reader.hasRemaining() ) {
+                String line = reader.readNext( DataTypeFactory.getStringLine() ).trim();
+                if ( !line.isEmpty() && !line.startsWith( "#" ) ) {
+                    String[] tokens = line.split( "=" );
                     String key = tokens[0].trim();
                     String value = tokens[1].trim();
-                    values.put(key, Arrays.asList(value.split(" ")));
-                    LOGGER.trace("Parsed line {} to [key: {}, values: {}]", line, key, values.get(key));
+                    values.put( key, Arrays.asList( value.split( " " ) ) );
+                    LOGGER.trace( "Parsed line {} to [key: {}, values: {}]", line, key, values.get( key ) );
                 }
             }
             return values;
@@ -355,33 +353,35 @@ public class KeyBasedConfiguration {
     }
 
     /**
-     * {@link ConfigParser} for parsing table based data with support for space seperated multi-values.
+     * {@link ConfigParser} for parsing table based data with support for space
+     * seperated multi-values.
      */
     static class TableConfigParser implements ConfigParser {
         /**
          * {@inheritDoc}
          */
         @Override
-        public Map<String, List<String>> parse(DataReader reader) throws IOException, CascParsingException {
+        public Map<String, List<String>> parse( DataReader reader ) throws IOException, CascParsingException {
             Map<String, List<String>> values = new HashMap<>();
             Map<Integer, String> headerIndexes = new HashMap<>();
             boolean header = true;
-            while (reader.hasRemaining()) {
-                String line = reader.readNext(DataTypeFactory.getStringLine()).trim();
-                if (!line.isEmpty()) {
+            while ( reader.hasRemaining() ) {
+                String line = reader.readNext( DataTypeFactory.getStringLine() ).trim();
+                if ( !line.isEmpty() ) {
                     int idx = 0;
-                    String[] tokens = line.split("\\|");
-                    for (String token : tokens) {
-                        String field = Optional.ofNullable(token)
-                                .filter(StringUtils::isNotEmpty)
-                                .map(String::trim)
-                                .orElse("");
-                        if (header) {
-                            String name = field.split("!")[0];
-                            values.put(name, new ArrayList<>());
-                            headerIndexes.put(idx, name);
-                        } else {
-                            values.get(headerIndexes.get(idx)).add(field);
+                    String[] tokens = line.split( "\\|" );
+                    for ( String token : tokens ) {
+                        String field = Optional.ofNullable( token )
+                                .filter( StringUtils::isNotEmpty )
+                                .map( String::trim )
+                                .orElse( "" );
+                        if ( header ) {
+                            String name = field.split( "!" )[0];
+                            values.put( name, new ArrayList<>() );
+                            headerIndexes.put( idx, name );
+                        } 
+                        else {
+                            values.get( headerIndexes.get( idx ) ).add( field );
                         }
                         idx++;
                     }

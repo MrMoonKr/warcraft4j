@@ -31,41 +31,44 @@ import static nl.salp.warcraft4j.util.DataTypeUtil.toByteArray;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
+
 /**
+ * JTree 구성을 위한 에셋경로 트리의 노드 클래스.
  * TODO Document class.
  *
  * @author Barre Dijkstra
  */
 public class CascFileTreeNode implements TreeNode, Comparable<CascFileTreeNode> {
+
     private final String name;
     private final CascFile file;
     private final List<CascFileTreeNode> children;
     private final WeakReference<CascFileTreeNode> parent;
 
-    public CascFileTreeNode(String name) {
-        this(name, null, null);
+    public CascFileTreeNode( String name ) {
+        this( name, null, null );
     }
 
-    public CascFileTreeNode(CascFile file) {
-        this(null, file, null);
+    public CascFileTreeNode( CascFile file ) {
+        this( null, file, null );
     }
 
-    public CascFileTreeNode(String name, CascFileTreeNode parent) {
-        this(name, null, parent);
+    public CascFileTreeNode( String name, CascFileTreeNode parent ) {
+        this( name, null, parent );
     }
 
-    public CascFileTreeNode(CascFile file, CascFileTreeNode parent) {
-        this(null, file, parent);
+    public CascFileTreeNode( CascFile file, CascFileTreeNode parent ) {
+        this( null, file, parent );
     }
 
-    public CascFileTreeNode(String name, CascFile file, CascFileTreeNode parent) {
-        if (isEmpty(name) && file == null) {
-            throw new IllegalArgumentException("Unable to create a CascFileTreeNode with both a null name and file.");
+    public CascFileTreeNode( String name, CascFile file, CascFileTreeNode parent ) {
+        if ( isEmpty( name ) && file == null ) {
+            throw new IllegalArgumentException( "Unable to create a CascFileTreeNode with both a null name and file." );
         }
-        this.name = Optional.ofNullable(name).orElse(getFilename(file));
+        this.name = Optional.ofNullable( name ).orElse( getFilename( file ) );
         this.file = file;
         this.children = new ArrayList<>();
-        this.parent = new WeakReference<>(parent);
+        this.parent = new WeakReference<>( parent );
     }
 
     public String getName() {
@@ -81,49 +84,40 @@ public class CascFileTreeNode implements TreeNode, Comparable<CascFileTreeNode> 
     }
 
     public Optional<CascFile> getFile() {
-        return Optional.ofNullable(file);
+        return Optional.ofNullable( file );
     }
 
     public List<CascFileTreeNode> getAllChildren() {
-        return Collections.unmodifiableList(children);
+        return Collections.unmodifiableList( children );
     }
 
-    public Optional<CascFileTreeNode> getChild(String name) {
+    public Optional<CascFileTreeNode> getChild( String name ) {
         Optional<CascFileTreeNode> entry;
-        if (isEmpty(name) || isFile()) {
+        if ( isEmpty( name ) || isFile() ) {
             entry = Optional.empty();
         } else {
-            entry = children.stream()
-                    .filter(c -> name.equalsIgnoreCase(c.getName()))
-                    .findAny();
+            entry = children.stream().filter( c -> name.equalsIgnoreCase( c.getName() ) ).findAny();
         }
         return entry;
     }
 
     public List<CascFileTreeNode> getChildFolders() {
-        return children.stream()
-                .filter(CascFileTreeNode::isFolder)
-                .distinct()
-                .sorted()
-                .collect(Collectors.toList());
+        return children.stream().filter( CascFileTreeNode::isFolder ).distinct().sorted()
+                .collect( Collectors.toList() );
     }
 
     public List<CascFileTreeNode> getChildFiles() {
-        return children.stream()
-                .filter(CascFileTreeNode::isFile)
-                .distinct()
-                .sorted()
-                .collect(Collectors.toList());
+        return children.stream().filter( CascFileTreeNode::isFile ).distinct().sorted().collect( Collectors.toList() );
     }
 
-    public Optional<CascFileTreeNode> addChild(CascFile file) {
+    public Optional<CascFileTreeNode> addChild( CascFile file ) {
         Optional<CascFileTreeNode> entry;
-        if (file != null && isFolder()) {
-            entry = getChild(getFilename(file));
-            if (!entry.isPresent()) {
-                CascFileTreeNode newEntry = new CascFileTreeNode(file, this);
-                if (children.add(newEntry)) {
-                    entry = Optional.of(newEntry);
+        if ( file != null && isFolder() ) {
+            entry = getChild( getFilename( file ) );
+            if ( !entry.isPresent() ) {
+                CascFileTreeNode newEntry = new CascFileTreeNode( file, this );
+                if ( children.add( newEntry ) ) {
+                    entry = Optional.of( newEntry );
                 } else {
                     entry = Optional.empty();
                 }
@@ -134,14 +128,14 @@ public class CascFileTreeNode implements TreeNode, Comparable<CascFileTreeNode> 
         return entry;
     }
 
-    public Optional<CascFileTreeNode> addChild(String folder) {
+    public Optional<CascFileTreeNode> addChild( String folder ) {
         Optional<CascFileTreeNode> entry;
-        if (isNotEmpty(folder) && isFolder()) {
-            entry = getChild(folder);
-            if (!entry.isPresent()) {
-                CascFileTreeNode newEntry = new CascFileTreeNode(folder, this);
-                if (children.add(newEntry)) {
-                    entry = Optional.of(newEntry);
+        if ( isNotEmpty( folder ) && isFolder() ) {
+            entry = getChild( folder );
+            if ( !entry.isPresent() ) {
+                CascFileTreeNode newEntry = new CascFileTreeNode( folder, this );
+                if ( children.add( newEntry ) ) {
+                    entry = Optional.of( newEntry );
                 } else {
                     entry = Optional.empty();
                 }
@@ -152,20 +146,20 @@ public class CascFileTreeNode implements TreeNode, Comparable<CascFileTreeNode> 
         return entry;
     }
 
-    private static String getFilename(CascFile file) {
-        return Optional.ofNullable(file)
-                .map(CascFile::getFilename)
-                .map(name -> name.orElse(byteArrayToHexString(toByteArray(file.getFilenameHash()))))
-                .orElse(null);
+    private static String getFilename( CascFile file ) {
+        return Optional.ofNullable( file )
+                .map( CascFile::getFilename )
+                .map( name -> name.orElse( byteArrayToHexString( toByteArray( file.getFilenameHash() ) ) ) )
+                .orElse( null );
     }
 
     @Override
-    public TreeNode getChildAt(int childIndex) {
-        return Optional.of(childIndex)
-                .filter(i -> i >= 0)
-                .filter(i -> i < children.size())
-                .map(children::get)
-                .orElse(null);
+    public TreeNode getChildAt( int childIndex ) {
+        return Optional.of( childIndex )
+                .filter( i -> i >= 0 )
+                .filter( i -> i < children.size() )
+                .map( children::get )
+                .orElse( null );
     }
 
     @Override
@@ -179,10 +173,10 @@ public class CascFileTreeNode implements TreeNode, Comparable<CascFileTreeNode> 
     }
 
     @Override
-    public int getIndex(TreeNode node) {
-        return Optional.ofNullable(node)
-                .map(children::indexOf)
-                .orElse(-1);
+    public int getIndex( TreeNode node ) {
+        return Optional.ofNullable( node )
+                .map( children::indexOf )
+                .orElse( -1 );
     }
 
     @Override
@@ -197,7 +191,7 @@ public class CascFileTreeNode implements TreeNode, Comparable<CascFileTreeNode> 
 
     @Override
     public Enumeration children() {
-        return new IteratorEnumeration<>(children.iterator());
+        return new IteratorEnumeration<>( children.iterator() );
     }
 
     @Override
@@ -211,21 +205,22 @@ public class CascFileTreeNode implements TreeNode, Comparable<CascFileTreeNode> 
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj != null && CascFileTreeNode.class.isAssignableFrom(obj.getClass()) && getName().equals(((CascFileTreeNode) obj).getName());
+    public boolean equals( Object obj ) {
+        return obj != null && CascFileTreeNode.class.isAssignableFrom( obj.getClass() )
+                && getName().equals( ( ( CascFileTreeNode )obj ).getName() );
     }
 
     @Override
-    public int compareTo(CascFileTreeNode other) {
+    public int compareTo( CascFileTreeNode other ) {
         int cmp;
-        if (other == null) {
+        if ( other == null ) {
             cmp = -1;
-        } else if (isFile() && other.isFolder()) {
+        } else if ( isFile() && other.isFolder() ) {
             cmp = 1;
-        } else if (isFolder() && other.isFile()) {
+        } else if ( isFolder() && other.isFile() ) {
             cmp = -1;
         } else {
-            cmp = getName().compareTo(other.getName());
+            cmp = getName().compareTo( other.getName() );
         }
         return cmp;
     }
