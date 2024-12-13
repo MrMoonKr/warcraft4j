@@ -33,61 +33,71 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * Base {@link CdnCascConfig} implementation containing all generic configuration logic.
+ * Base {@link CdnCascConfig} implementation containing all generic
+ * configuration logic.
  *
  * @author Barre Dijkstra
  * @see CdnCascConfig
  */
 public abstract class BaseCdnCascConfig implements CdnCascConfig {
+
     /** The logger. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseCdnCascConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger( BaseCdnCascConfig.class );
+
     /** The {@code build} file key for the {@code download} field. */
-    protected static final String KEY_BUILD_DOWNLOAD = "download";
+    protected static final String KEY_BUILD_DOWNLOAD        = "download";
     /** The {@code build} file key for the {@code encoding} field. */
-    protected static final String KEY_BUILD_ENCODING = "encoding";
+    protected static final String KEY_BUILD_ENCODING        = "encoding";
     /** The {@code build} file key for the {@code encoding size} field. */
-    protected static final String KEY_BUILD_ENCODING_SIZE = "encoding-size";
+    protected static final String KEY_BUILD_ENCODING_SIZE   = "encoding-size";
     /** The {@code build} file key for the {@code install} field. */
-    protected static final String KEY_BUILD_INSTALL = "install";
+    protected static final String KEY_BUILD_INSTALL         = "install";
     /** The {@code build} file key for the {@code installer} field. */
-    protected static final String KEY_BUILD_INSTALLER = "buildConfig-playbuild-installer";
+    protected static final String KEY_BUILD_INSTALLER       = "buildConfig-playbuild-installer";
     /** The {@code build} file key for the {@code name} field. */
-    protected static final String KEY_BUILD_NAME = "buildConfig-name";
+    protected static final String KEY_BUILD_NAME            = "buildConfig-name";
     /** The {@code build} file key for the {@code patch} field. */
-    protected static final String KEY_BUILD_PATCH = "patch";
+    protected static final String KEY_BUILD_PATCH           = "patch";
     /** The {@code build} file key for the {@code patch config} field. */
-    protected static final String KEY_BUILD_PATCH_CONFIG = "patch-config";
+    protected static final String KEY_BUILD_PATCH_CONFIG    = "patch-config";
     /** The {@code build} file key for the {@code patch size} field. */
-    protected static final String KEY_BUILD_PATCH_SIZE = "patch-size";
+    protected static final String KEY_BUILD_PATCH_SIZE      = "patch-size";
     /** The {@code build} file key for the {@code product} field. */
-    protected static final String KEY_BUILD_PRODUCT = "buildConfig-product";
+    protected static final String KEY_BUILD_PRODUCT         = "buildConfig-product";
     /** The {@code build} file key for the {@code root} field. */
-    protected static final String KEY_BUILD_ROOT = "root";
+    protected static final String KEY_BUILD_ROOT            = "root";
     /** The {@code build} file key for the {@code UID} field. */
-    protected static final String KEY_BUILD_UID = "buildConfig-uid";
+    protected static final String KEY_BUILD_UID             = "buildConfig-uid";
     /** The {@code CDN} file key for the {@code builds} field. */
-    protected static final String KEY_CDN_BUILDS = "builds";
+    protected static final String KEY_CDN_BUILDS            = "builds";
     /** The {@code CDN} file key for the {@code archives} field. */
-    protected static final String KEY_CDN_ARCHIVES = "archives";
+    protected static final String KEY_CDN_ARCHIVES          = "archives";
     /** The {@code CDN} file key for the {@code archive group} field. */
-    protected static final String KEY_CDN_ARCHIVE_GROUP = "archive-group";
+    protected static final String KEY_CDN_ARCHIVE_GROUP     = "archive-group";
     /** The {@code CDN} file key for the {@code patch archives} field. */
-    protected static final String KEY_CDN_PATCH_ARCHIVES = "patch-archives";
+    protected static final String KEY_CDN_PATCH_ARCHIVES    = "patch-archives";
     /** The {@code CDN} file key for the {@code patch archive group} field. */
     protected static final String KEY_CDN_PATCH_ARCHIVE_GROUP = "patch-archive-group";
+
     /** The {@link DataReaderProvider} for reading the configuration files. */
     private final DataReaderProvider dataReaderProvider;
     /** The {@link Warcraft4jConfig} instance. */
     private final Warcraft4jConfig warcraft4jConfig;
+
     /** The parsed build configuration file. */
     private KeyBasedConfiguration buildConfig;
     /** The parsed CDN configuration file. */
     private KeyBasedConfiguration cdnConfig;
 
-    protected BaseCdnCascConfig(Warcraft4jConfig warcraft4jConfig, DataReaderProvider dataReaderProvider) {
-        LOGGER.trace("Created {} config instance for installation {}, region {}, branch {} and locale {} with data reader provider {}",
-                getClass().getName(), warcraft4jConfig.getWowInstallationDirectory(), warcraft4jConfig.getRegion(),
-                warcraft4jConfig.getBranch(), warcraft4jConfig.getLocale(), dataReaderProvider.getClass().getName());
+    protected BaseCdnCascConfig( Warcraft4jConfig warcraft4jConfig, DataReaderProvider dataReaderProvider ) {
+        LOGGER.trace(
+                "Created {} config instance for installation {}, region {}, branch {} and locale {} with data reader provider {}",
+                getClass().getName(), 
+                warcraft4jConfig.getWowInstallationDirectory(), 
+                warcraft4jConfig.getRegion(),
+                warcraft4jConfig.getBranch(), 
+                warcraft4jConfig.getLocale(), 
+                dataReaderProvider.getClass().getName() );
         this.warcraft4jConfig = warcraft4jConfig;
         this.dataReaderProvider = dataReaderProvider;
     }
@@ -99,8 +109,8 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      *
      * @return The supplier for the data reader.
      */
-    protected final Supplier<DataReader> getDataReader(String uri) {
-        return dataReaderProvider.getDataReader(uri);
+    protected final Supplier<DataReader> getDataReader( String uri ) {
+        return dataReaderProvider.getDataReader( uri );
     }
 
     /**
@@ -110,7 +120,7 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      *
      * @return The supplier for the data reader.
      */
-    protected abstract Supplier<DataReader> getConfigDataReader(String checksum);
+    protected abstract Supplier<DataReader> getConfigDataReader( String checksum );
 
     /**
      * Get the parsed build configuration.
@@ -118,11 +128,11 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      * @return The build configuration.
      */
     protected final KeyBasedConfiguration getBuildConfig() {
-        if (buildConfig == null) {
+        if ( buildConfig == null ) {
             String buildConfigKey = getBuildConfigKey()
-                    .orElseThrow(() -> new CascParsingException("No build configuration file checksum available."));
-            LOGGER.debug("Initialising build config with key {}", buildConfigKey);
-            buildConfig = KeyBasedConfiguration.keyValueConfig(getConfigDataReader(buildConfigKey));
+                    .orElseThrow( () -> new CascParsingException( "No build configuration file checksum available." ) );
+            LOGGER.debug( "Initialising build config with key {}", buildConfigKey );
+            buildConfig = KeyBasedConfiguration.keyValueConfig( getConfigDataReader( buildConfigKey ) );
         }
         return buildConfig;
     }
@@ -133,11 +143,11 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      * @return The CDN configuration.
      */
     protected final KeyBasedConfiguration getCdnConfig() {
-        if (cdnConfig == null) {
+        if ( cdnConfig == null ) {
             String cdnConfigKey = getCdnConfigKey()
-                    .orElseThrow(() -> new CascParsingException("No CDN configuration file checksum available."));
-            LOGGER.debug("Initialising CDN config with key {}", cdnConfigKey);
-            cdnConfig = KeyBasedConfiguration.keyValueConfig(getConfigDataReader(cdnConfigKey));
+                    .orElseThrow( () -> new CascParsingException( "No CDN configuration file checksum available." ) );
+            LOGGER.debug( "Initialising CDN config with key {}", cdnConfigKey );
+            cdnConfig = KeyBasedConfiguration.keyValueConfig( getConfigDataReader( cdnConfigKey ) );
         }
         return cdnConfig;
     }
@@ -147,9 +157,10 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      */
     @Override
     public ContentChecksum getRootContentChecksum() {
-        ContentChecksum checksum = getBuildConfig().getLastValue(KEY_BUILD_ROOT, (s) -> new ContentChecksum(DataTypeUtil.hexStringToByteArray(s)))
-                .orElseThrow(() -> new CascParsingException("No root content checksum available."));
-        LOGGER.trace("Retrieved root file content checksum {}", checksum.toHexString());
+        ContentChecksum checksum = getBuildConfig()
+                .getLastValue( KEY_BUILD_ROOT, ( s ) -> new ContentChecksum( DataTypeUtil.hexStringToByteArray( s ) ) )
+                .orElseThrow( () -> new CascParsingException( "No root content checksum available." ) );
+        LOGGER.trace( "Retrieved root file content checksum {}", checksum.toHexString() );
         return checksum;
     }
 
@@ -158,9 +169,10 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      */
     @Override
     public FileKey getStorageEncodingFileChecksum() {
-        FileKey fileKey = getBuildConfig().getLastValue(KEY_BUILD_ENCODING, (s) -> new FileKey(DataTypeUtil.hexStringToByteArray(s)))
-                .orElseThrow(() -> new CascParsingException("No storage encoding file checksum available."));
-        LOGGER.trace("Retrieved storage encoding file checksum {}", fileKey.toHexString());
+        FileKey fileKey = getBuildConfig()
+                .getLastValue( KEY_BUILD_ENCODING, ( s ) -> new FileKey( DataTypeUtil.hexStringToByteArray( s ) ) )
+                .orElseThrow( () -> new CascParsingException( "No storage encoding file checksum available." ) );
+        LOGGER.trace( "Retrieved storage encoding file checksum {}", fileKey.toHexString() );
         return fileKey;
     }
 
@@ -169,9 +181,9 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      */
     @Override
     public long getStorageEncodingFileSize() {
-        long size = getBuildConfig().getLastValue(KEY_BUILD_ENCODING_SIZE, Long::valueOf)
-                .orElseThrow(() -> new CascParsingException("No storage encoding file size available."));
-        LOGGER.trace("Retrieved storage encoding file size {}", size);
+        long size = getBuildConfig().getLastValue( KEY_BUILD_ENCODING_SIZE, Long::valueOf )
+                .orElseThrow( () -> new CascParsingException( "No storage encoding file size available." ) );
+        LOGGER.trace( "Retrieved storage encoding file size {}", size );
         return size;
     }
 
@@ -180,9 +192,9 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      */
     @Override
     public long getExtractedEncodingFileSize() {
-        long size = getBuildConfig().getFirstValue(KEY_BUILD_ENCODING_SIZE, Long::valueOf)
-                .orElseThrow(() -> new CascParsingException("No extracted encoding file size available."));
-        LOGGER.trace("Retrieved extracted encoding file size {}", size);
+        long size = getBuildConfig().getFirstValue( KEY_BUILD_ENCODING_SIZE, Long::valueOf )
+                .orElseThrow( () -> new CascParsingException( "No extracted encoding file size available." ) );
+        LOGGER.trace( "Retrieved extracted encoding file size {}", size );
         return size;
     }
 
@@ -191,9 +203,10 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      */
     @Override
     public FileKey getExtractedEncodingFileChecksum() {
-        FileKey fileKey = getBuildConfig().getFirstValue(KEY_BUILD_ENCODING, (s) -> new FileKey(DataTypeUtil.hexStringToByteArray(s)))
-                .orElseThrow(() -> new CascParsingException("No extracted encoding file checksum available."));
-        LOGGER.trace("Retrieved extracted encoding file checksum {}", fileKey.toHexString());
+        FileKey fileKey = getBuildConfig()
+                .getFirstValue( KEY_BUILD_ENCODING, ( s ) -> new FileKey( DataTypeUtil.hexStringToByteArray( s ) ) )
+                .orElseThrow( () -> new CascParsingException( "No extracted encoding file checksum available." ) );
+        LOGGER.trace( "Retrieved extracted encoding file checksum {}", fileKey.toHexString() );
         return fileKey;
     }
 
@@ -202,9 +215,10 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      */
     @Override
     public List<FileKey> getArchiveChecksums() {
-        List<FileKey> checksums = getCdnConfig().getValues(KEY_CDN_ARCHIVES, (s) -> new FileKey(DataTypeUtil.hexStringToByteArray(s)))
-                .orElseThrow(() -> new CascParsingException("No archive file checksums available."));
-        LOGGER.trace("Retrieved {} archive checksums {}", checksums.size(), checksums);
+        List<FileKey> checksums = getCdnConfig()
+                .getValues( KEY_CDN_ARCHIVES, ( s ) -> new FileKey( DataTypeUtil.hexStringToByteArray( s ) ) )
+                .orElseThrow( () -> new CascParsingException( "No archive file checksums available." ) );
+        LOGGER.trace( "Retrieved {} archive checksums {}", checksums.size(), checksums );
         return checksums;
     }
 
@@ -213,9 +227,10 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      */
     @Override
     public FileKey getArchiveGroupChecksum() {
-        FileKey checksum = getCdnConfig().getLastValue(KEY_CDN_ARCHIVE_GROUP, (s) -> new FileKey(DataTypeUtil.hexStringToByteArray(s)))
-                .orElseThrow(() -> new CascParsingException("No archive group file checksum available."));
-        LOGGER.trace("Retrieved archive group checksum {}", checksum);
+        FileKey checksum = getCdnConfig()
+                .getLastValue( KEY_CDN_ARCHIVE_GROUP, ( s ) -> new FileKey( DataTypeUtil.hexStringToByteArray( s ) ) )
+                .orElseThrow( () -> new CascParsingException( "No archive group file checksum available." ) );
+        LOGGER.trace( "Retrieved archive group checksum {}", checksum );
         return checksum;
     }
 
@@ -224,9 +239,10 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      */
     @Override
     public List<FileKey> getPatchArchiveChecksums() {
-        List<FileKey> checksums = getCdnConfig().getValues(KEY_CDN_PATCH_ARCHIVES, (s) -> new FileKey(DataTypeUtil.hexStringToByteArray(s)))
-                .orElseThrow(() -> new CascParsingException("No patch archive file checksums available."));
-        LOGGER.trace("Retrieved {} patch archive checksums {}", checksums.size(), checksums);
+        List<FileKey> checksums = getCdnConfig()
+                .getValues( KEY_CDN_PATCH_ARCHIVES, ( s ) -> new FileKey( DataTypeUtil.hexStringToByteArray( s ) ) )
+                .orElseThrow( () -> new CascParsingException( "No patch archive file checksums available." ) );
+        LOGGER.trace( "Retrieved {} patch archive checksums {}", checksums.size(), checksums );
         return checksums;
     }
 
@@ -235,9 +251,11 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      */
     @Override
     public FileKey getPatchArchiveGroupChecksum() {
-        FileKey checksum = getCdnConfig().getLastValue(KEY_CDN_PATCH_ARCHIVE_GROUP, (s) -> new FileKey(DataTypeUtil.hexStringToByteArray(s)))
-                .orElseThrow(() -> new CascParsingException("No patch archive group file checksum available."));
-        LOGGER.trace("Retrieved patch archive group checksum {}", checksum);
+        FileKey checksum = getCdnConfig()
+                .getLastValue( KEY_CDN_PATCH_ARCHIVE_GROUP,
+                        ( s ) -> new FileKey( DataTypeUtil.hexStringToByteArray( s ) ) )
+                .orElseThrow( () -> new CascParsingException( "No patch archive group file checksum available." ) );
+        LOGGER.trace( "Retrieved patch archive group checksum {}", checksum );
         return checksum;
     }
 
@@ -270,28 +288,28 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
     @Override
     public final String getRegionCode() {
         String region;
-        switch (getRegion()) {
-            case AMERICAS:
-                region = "us";
-                break;
-            case CHINA:
-                region = "cn";
-                break;
-            case EUROPE:
-                region = "eu";
-                break;
-            case KOREA:
-                region = "kr";
-                break;
-            case SEA_AUSTRALASIA:
-                region = "sg";
-                break;
-            case TAIWAN:
-                region = "tw";
-                break;
-            default:
-                region = "xx";
-                break;
+        switch ( getRegion() ) {
+        case AMERICAS:
+            region = "us";
+            break;
+        case CHINA:
+            region = "cn";
+            break;
+        case EUROPE:
+            region = "eu";
+            break;
+        case KOREA:
+            region = "kr";
+            break;
+        case SEA_AUSTRALASIA:
+            region = "sg";
+            break;
+        case TAIWAN:
+            region = "tw";
+            break;
+        default:
+            region = "xx";
+            break;
         }
         return region;
     }
@@ -306,12 +324,14 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      *
      * @return Optional containing the value if available.
      */
-    protected final Optional<String> getIndexedValue(KeyBasedConfiguration config, String key, String indexKey, String indexValue) {
-        return getIndexedValue(config, key, 0, indexKey, indexValue);
+    protected final Optional<String> getIndexedValue( KeyBasedConfiguration config, String key, String indexKey,
+            String indexValue ) {
+        return getIndexedValue( config, key, 0, indexKey, indexValue );
     }
 
     /**
-     * Get a entry from a multi-entry value from a config based on the value of another column in the config.
+     * Get a entry from a multi-entry value from a config based on the value of
+     * another column in the config.
      *
      * @param config     The config to get the value from.
      * @param key        The key of the column to get the value for.
@@ -321,19 +341,22 @@ public abstract class BaseCdnCascConfig implements CdnCascConfig {
      *
      * @return Optional containing the value if available.
      */
-    protected final Optional<String> getIndexedValue(KeyBasedConfiguration config, String key, int idx, String indexKey, String indexValue) {
-        return config.getValue(key, indexKey, indexValue)
-                .flatMap(s -> {
-                    if (s.contains(" ")) {
-                        String[] values = s.split(" ");
-                        if (idx > values.length) {
-                            return Optional.empty();
-                        } else {
-                            return Optional.of(s.split(" ")[idx].trim());
-                        }
-                    } else {
-                        return Optional.ofNullable(s);
-                    }
-                });
+    protected final Optional<String> getIndexedValue( KeyBasedConfiguration config, 
+            String key, int idx, String indexKey, String indexValue ) 
+    {
+        return config.getValue( key, indexKey, indexValue ).flatMap( s -> {
+            if ( s.contains( " " ) ) {
+                String[] values = s.split( " " );
+                if ( idx > values.length ) {
+                    return Optional.empty();
+                } 
+                else {
+                    return Optional.of( s.split( " " )[idx].trim() );
+                }
+            } 
+            else {
+                return Optional.ofNullable( s );
+            }
+        } );
     }
 }

@@ -137,7 +137,8 @@ public class CascFileExtractor {
                         format( "Error while extraction CASC file to %s: %s", destination, e.getMessage() ), e );
             }
         } 
-        else {
+        else 
+        {
             throw new CascExtractionException( format(
                     "Unable to extract a file to %s, the path already exists and is not a file or not writable.",
                     destination ) );

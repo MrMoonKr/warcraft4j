@@ -41,47 +41,67 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
  * @author Barre Dijkstra
  */
 public class RootFileParser {
+
     /** The logger. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RootFileParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger( RootFileParser.class );
 
+    public RootFile parse( DataReader reader ) throws DataReadingException, DataParsingException {
+        LOGGER.trace( "Parsing root file" );
 
-    public RootFile parse(DataReader reader) throws DataReadingException, DataParsingException {
-        LOGGER.trace("Parsing root file");
-        Map<Long, List<RootEntry>> entries = parseEntryBlocks(reader);
-        LOGGER.trace("Parsed root with {} entries", entries.size());
-        return new RootFile(entries);
+        Map<Long, List<RootEntry>> entries = parseEntryBlocks( reader );
+
+        LOGGER.trace( "Parsed root with {} entries", entries.size() );
+        return new RootFile( entries );
     }
 
-    private Map<Long, List<RootEntry>> parseEntryBlocks(DataReader reader) throws DataReadingException, DataParsingException {
+    /**
+     * 파일 데이터 로딩
+     * @param reader
+     * @return
+     * @throws DataReadingException
+     * @throws DataParsingException
+     */
+    private Map<Long, List<RootEntry>> parseEntryBlocks( DataReader reader ) throws DataReadingException, DataParsingException 
+    {
         Map<Long, List<RootEntry>> entries = new HashMap<>();
         long totalEntries = 0;
         long totalReadEntries = 0;
-        LOGGER.trace("Reading entries from position {} ({} bytes remaining)", reader.position(), reader.remaining());
-        while (reader.remaining() > 4) {
-            long entryCount = reader.readNext(DataTypeFactory.getUnsignedInteger(), LITTLE_ENDIAN);
-            if (entryCount > 0) {
-                LOGGER.trace("Reading {} entries from position {} ({} bytes remaining)", entryCount, reader.position(), reader.remaining());
-                totalEntries += entryCount;
-                long blockUnknown = reader.readNext(DataTypeFactory.getUnsignedInteger(), LITTLE_ENDIAN);
-                long blockFlags = reader.readNext(DataTypeFactory.getUnsignedInteger(), LITTLE_ENDIAN);
+        LOGGER.trace( "Reading entries from position {} ({} bytes remaining)", reader.position(), reader.remaining() );
 
-                if (!CascLocale.getLocale(blockFlags).isPresent()) {
-                    LOGGER.warn("Unable to find a locale for root entry flag {} ({})", Long.toBinaryString(blockFlags), blockFlags);
+        while ( reader.remaining() > 4 ) {
+
+            long entryCount = reader.readNext( DataTypeFactory.getUnsignedInteger(), LITTLE_ENDIAN );
+            if ( entryCount > 0 ) {
+                LOGGER.trace( "Reading {} entries from position {} ({} bytes remaining)", 
+                        entryCount, reader.position(), reader.remaining() );
+                totalEntries += entryCount;
+
+                long blockUnknown = reader.readNext( DataTypeFactory.getUnsignedInteger(), LITTLE_ENDIAN );
+                long blockFlags = reader.readNext( DataTypeFactory.getUnsignedInteger(), LITTLE_ENDIAN );
+
+                if ( !CascLocale.getLocale( blockFlags ).isPresent() ) {
+                    LOGGER.warn( "Unable to find a locale for root entry flag {} ({})",
+                            Long.toBinaryString( blockFlags ), blockFlags );
                 }
+
                 List<Long> entryUnknown = new ArrayList<>();
-                for (long i = 0; i < entryCount; i++) {
-                    entryUnknown.add(reader.readNext(DataTypeFactory.getUnsignedInteger(), LITTLE_ENDIAN));
+                for ( long i = 0; i < entryCount; i++ ) {
+                    entryUnknown.add( reader.readNext( DataTypeFactory.getUnsignedInteger(), LITTLE_ENDIAN ) );
                 }
-                for (long i = 0; i < entryCount; i++) {
-                    byte[] contentChecksum = reader.readNext(DataTypeFactory.getByteArray(16));
-                    long filenameHash = reader.readNext(DataTypeFactory.getLong(), LITTLE_ENDIAN);
-                    if (!entries.containsKey(filenameHash)) {
-                        entries.put(filenameHash, new ArrayList<>());
+                
+                for ( long i = 0; i < entryCount; i++ ) {
+                    byte[] contentChecksum = reader.readNext( DataTypeFactory.getByteArray( 16 ) );
+                    long filenameHash = reader.readNext( DataTypeFactory.getLong(), LITTLE_ENDIAN );
+                    if ( !entries.containsKey( filenameHash ) ) {
+                        entries.put( filenameHash, new ArrayList<>() );
                     }
-                    entries.get(filenameHash).add(new CascRootEntry(filenameHash, new ContentChecksum(contentChecksum), blockFlags, blockUnknown, entryUnknown.get((int) i)));
+                    entries.get( filenameHash )
+                            .add( new CascRootEntry( filenameHash, new ContentChecksum( contentChecksum ), blockFlags,
+                                    blockUnknown, entryUnknown.get( ( int )i ) ) );
                     totalReadEntries++;
                 }
-                LOGGER.trace("Read {} entries from {} calculated, on position {}", totalReadEntries, totalEntries, reader.position());
+                LOGGER.trace( "Read {} entries from {} calculated, on position {}", totalReadEntries, totalEntries,
+                        reader.position() );
             }
         }
         return entries;

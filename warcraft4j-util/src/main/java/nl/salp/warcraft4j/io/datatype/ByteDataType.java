@@ -29,7 +29,7 @@ class ByteDataType extends DataType<Byte> {
      * {@inheritDoc}
      */
     @Override
-    protected Byte[] newArray(int entries) throws UnsupportedOperationException {
+    protected Byte[] newArray( int entries ) throws UnsupportedOperationException {
         return new Byte[entries];
     }
 
@@ -45,7 +45,7 @@ class ByteDataType extends DataType<Byte> {
      * {@inheritDoc}
      */
     @Override
-    public Byte readNext(ByteBuffer buffer, ByteOrder byteOrder) {
-        return buffer.order(byteOrder).get();
+    public Byte readNext( ByteBuffer buffer, ByteOrder byteOrder ) {
+        return buffer.order( byteOrder ).get();
     }
 }

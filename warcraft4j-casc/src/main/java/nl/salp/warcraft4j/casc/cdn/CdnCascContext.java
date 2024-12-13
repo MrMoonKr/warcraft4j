@@ -136,21 +136,22 @@ public abstract class CdnCascContext {
      * @throws CascParsingException When parsing of the rootFile failed.
      */
     protected RootFile parseRoot() throws CascParsingException {
+
         ContentChecksum contentChecksum = Optional.of( getCdnCascConfig().getRootContentChecksum() )
                 .orElseThrow( () -> new CascParsingException( "No checksum found for root file" ) );
-        FileKey fileKey = getFileKey( contentChecksum ).orElseThrow( () -> new CascParsingException(
-                format( "No file key found for root file entry %s", contentChecksum.toHexString() ) ) );
-        IndexEntry indexEntry = getIndexEntry( fileKey ).orElseThrow(
-                () -> new CascParsingException( format( "No index entry found for root file entry %s with key %s",
+        FileKey fileKey = getFileKey( contentChecksum )
+                .orElseThrow( () -> new CascParsingException( format( "No file key found for root file entry %s", contentChecksum.toHexString() ) ) );
+        IndexEntry indexEntry = getIndexEntry( fileKey )
+                .orElseThrow( () -> new CascParsingException( format( "No index entry found for root file entry %s with key %s",
                         contentChecksum.toHexString(), fileKey.toHexString() ) ) );
-        LOGGER.debug(
-                "Initialising root file (contentChecksum: {}, fileKey: {}) from {} bytes of data in data.{} at offset {}",
+        LOGGER.debug( "Initialising root file (contentChecksum: {}, fileKey: {}) from {} bytes of data in data.{} at offset {}",
                 contentChecksum.toHexString(), fileKey.toHexString(), indexEntry.getFileSize(),
                 format( "%03d", indexEntry.getFileNumber() ), indexEntry.getDataFileOffset() );
 
         try ( DataReader reader = getFileDataReader( indexEntry, contentChecksum ) ) {
             return new RootFileParser().parse( reader );
-        } catch ( IOException e ) {
+        } 
+        catch ( IOException e ) {
             throw new CascParsingException( format( "Error parsing root file from data file %d at offset %d",
                     indexEntry.getFileNumber(), indexEntry.getDataFileOffset() ), e );
         }
@@ -470,7 +471,7 @@ public abstract class CdnCascContext {
     /**
      * Get the content checksums associated for a hash.
      *
-     * @param filenameHash The hash to get the checksums for.
+     * @param filenameHash Jenkins 해시키. The hash to get the checksums for.
      *
      * @return List containing all checksums for the hash or an empty list if no
      *         checksums were associated with the hash.
@@ -727,6 +728,7 @@ public abstract class CdnCascContext {
     }
 
     /**
+     * 에셋이름으로 부터 해시키 구해서 인덱스 엔트리를 찾는다.
      * Get the index entries for a file.
      *
      * @param filename The filename.
@@ -734,13 +736,15 @@ public abstract class CdnCascContext {
      * @return The index entries for the file.
      */
     public List<IndexEntry> getIndexEntries( String filename ) {
-        return getHash( filename ).map( this::getIndexEntries ).orElse( Collections.emptyList() );
+        return getHash( filename )
+                .map( this::getIndexEntries )
+                .orElse( Collections.emptyList() );
     }
 
     /**
      * Get the index entries for a file.
      *
-     * @param hashCode The hashcode of the filename.
+     * @param hashCode Jenkins 해시키. The hashcode of the filename.
      *
      * @return The index entries for the file.
      */
@@ -754,6 +758,7 @@ public abstract class CdnCascContext {
     }
 
     /**
+     * 파일 이름 문자열 내부의 '/'를 '\\'로 바꾸는 함수.  
      * Clean a filename to match the format used for hashing / referencing.
      *
      * @param filename The filename.
@@ -764,13 +769,15 @@ public abstract class CdnCascContext {
         String cleaned;
         if ( isEmpty( filename ) ) {
             cleaned = filename;
-        } else {
+        } 
+        else {
             cleaned = filename.replace( '/', '\\' ).toUpperCase();
         }
         return cleaned;
     }
 
     /**
+     * 에셋 이름의 JenkinsHash 얻기
      * Create a hash for a filename.
      *
      * @param filename The filename.
@@ -781,7 +788,8 @@ public abstract class CdnCascContext {
         long hash;
         if ( isEmpty( filename ) ) {
             hash = 0;
-        } else {
+        } 
+        else {
             ;
             byte[] data = cleanFilename( filename ).getBytes( StandardCharsets.US_ASCII );
             hash = JenkinsHash.hashLittle2( data, data.length );

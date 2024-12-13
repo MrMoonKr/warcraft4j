@@ -28,17 +28,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * 해시키, 에셋정보 룩업 테이블
  * TODO Document class.
  *
  * @author Barre Dijkstra
  */
 public class RootFile {
+
     private final Map<Long, List<RootEntry>> entries;
 
-    public RootFile(Map<Long, List<RootEntry>> entries) throws IllegalArgumentException {
-        this.entries = Optional.ofNullable(entries)
-                .filter(m -> !m.isEmpty())
-                .orElseThrow(() -> new IllegalArgumentException("Can't initialise the root with no entries."));
+    public RootFile( Map<Long, List<RootEntry>> entries ) throws IllegalArgumentException {
+        this.entries = Optional.ofNullable( entries )
+                .filter( m -> !m.isEmpty() )
+                .orElseThrow( () -> new IllegalArgumentException( "Can't initialise the root with no entries." ) );
     }
 
     public long getHashCount() {
@@ -46,43 +48,43 @@ public class RootFile {
     }
 
     public Set<Long> getHashes() {
-        return Collections.unmodifiableSet(entries.keySet());
+        return Collections.unmodifiableSet( entries.keySet() );
     }
 
-    public boolean isEntryAvailable(long hash) {
-        return entries.containsKey(hash) && !getEntries(hash).isEmpty();
+    public boolean isEntryAvailable( long hash ) {
+        return entries.containsKey( hash ) && !getEntries( hash ).isEmpty();
     }
 
-    protected List<RootEntry> getEntries(long hash) {
-        return entries.getOrDefault(hash, Collections.emptyList());
+    protected List<RootEntry> getEntries( long hash ) {
+        return entries.getOrDefault( hash, Collections.emptyList() );
     }
 
-    public List<ContentChecksum> getContentChecksums(long hash) {
-        return getEntries(hash).stream()
-                .map(RootEntry::getContentChecksum)
-                .collect(Collectors.toList());
+    public List<ContentChecksum> getContentChecksums( long hash ) {
+        return getEntries( hash )
+                .stream()
+                .map( RootEntry::getContentChecksum )
+                .collect( Collectors.toList() );
     }
 
     public Collection<RootEntry> getEntries() {
-        return entries.values().stream()
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
+        return entries.values()
+                .stream()
+                .flatMap( List::stream )
+                .collect( Collectors.toList() );
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return HashCodeBuilder.reflectionHashCode( this );
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public boolean equals( Object obj ) {
+        return EqualsBuilder.reflectionEquals( this, obj );
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append("entries", entries.size())
-                .toString();
+        return new ToStringBuilder( this ).append( "entries", entries.size() ).toString();
     }
 }

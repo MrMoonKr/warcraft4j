@@ -23,18 +23,20 @@ import nl.salp.warcraft4j.Branch;
 import static java.lang.String.format;
 
 /**
+ * 온라인 서비스 종류 열거체 : "wow", "wowt", "wow_beta"
  * TODO Document class.
  *
  * @author Barre Dijkstra
  */
 public enum OnlineVersionConfig {
-    WOW_LIVE("wow"),
-    WOW_PTR("wowt"),
-    WOW_BETA("wow_beta");
+
+    WOW_LIVE( "wow" ), 
+    WOW_PTR( "wowt" ), 
+    WOW_BETA( "wow_beta" );
 
     private final String productCode;
 
-    OnlineVersionConfig(String productCode) {
+    OnlineVersionConfig( String productCode ) {
         this.productCode = productCode;
     }
 
@@ -42,16 +44,16 @@ public enum OnlineVersionConfig {
         return productCode;
     }
 
-    public static OnlineVersionConfig getFrom(Branch branch) throws IllegalArgumentException {
-        switch (branch) {
-            case BETA:
-                return WOW_BETA;
-            case LIVE:
-                return WOW_LIVE;
-            case TESTING:
-                return WOW_PTR;
-            default:
-                throw new IllegalArgumentException(format("Unable to find a CDN version for branch %s", branch));
+    public static OnlineVersionConfig getFrom( Branch branch ) throws IllegalArgumentException {
+        switch ( branch ) {
+        case BETA:
+            return WOW_BETA;
+        case LIVE:
+            return WOW_LIVE;
+        case TESTING:
+            return WOW_PTR;
+        default:
+            throw new IllegalArgumentException( format( "Unable to find a CDN version for branch %s", branch ) );
         }
     }
 }

@@ -28,11 +28,13 @@ import static java.lang.String.format;
 import static java.nio.file.StandardOpenOption.READ;
 
 /**
- * {@link DataReader} implementation for reading random access files, allowing for repositioning of the read cursor.
+ * {@link DataReader} implementation for reading random access files, allowing
+ * for repositioning of the read cursor.
  *
  * @author Barre Dijkstra
  */
 public class FileDataReader extends BaseDataReader {
+
     private static final long DEFAULT_MAX_LENGTH = Long.MAX_VALUE;
     /** The file channel for the file. */
     private FileChannel channel;
@@ -48,51 +50,57 @@ public class FileDataReader extends BaseDataReader {
      *
      * @throws IllegalArgumentException When the file could not be read.
      */
-    public FileDataReader(Path file) throws IllegalArgumentException {
-        this(file, 0, DEFAULT_MAX_LENGTH);
+    public FileDataReader( Path file ) throws IllegalArgumentException {
+        this( file, 0, DEFAULT_MAX_LENGTH );
     }
 
     /**
-     * Create a new FileDataReader instance for the given file, starting at the given offset.
+     * Create a new FileDataReader instance for the given file, starting at the
+     * given offset.
      *
      * @param file   The file.
      * @param offset The file offset to start at.
      *
      * @throws IllegalArgumentException When the file could not be read.
      */
-    public FileDataReader(Path file, long offset) throws IllegalArgumentException {
-        this(file, offset, DEFAULT_MAX_LENGTH);
+    public FileDataReader( Path file, long offset ) throws IllegalArgumentException {
+        this( file, offset, DEFAULT_MAX_LENGTH );
     }
 
     /**
-     * Create a new FileDataReader instance for the given file, starting at the given offset.
+     * Create a new FileDataReader instance for the given file, starting at the
+     * given offset.
      *
      * @param file      The file.
      * @param offset    The file offset to start at.
      * @param maxLength The maximum number of bytes to be available.
      *
-     * @throws DataReadingException     When the file could not be opened for reading.
+     * @throws DataReadingException     When the file could not be opened for
+     *                                  reading.
      * @throws IllegalArgumentException When invalid data was provided.
      */
-    public FileDataReader(Path file, long offset, long maxLength) throws DataReadingException, IllegalArgumentException {
-        if (file == null) {
-            throw new IllegalArgumentException("Can't create a random access file data reader for a null file.");
+    public FileDataReader( Path file, long offset, long maxLength )
+            throws DataReadingException, IllegalArgumentException {
+        if ( file == null ) {
+            throw new IllegalArgumentException( "Can't create a random access file data reader for a null file." );
         }
-        if (Files.notExists(file) || !Files.isRegularFile(file)) {
-            throw new IllegalArgumentException(format("Can't create a random access file data reader for non existing file %s", file));
+        if ( Files.notExists( file ) || !Files.isRegularFile( file ) ) {
+            throw new IllegalArgumentException( format( "Can't create a random access file data reader for non existing file %s", file ) );
         }
-        if (!Files.isReadable(file)) {
-            throw new IllegalArgumentException(format("Can't create a random access file data reader for non readable file %s", file));
+        if ( !Files.isReadable( file ) ) {
+            throw new IllegalArgumentException( format( "Can't create a random access file data reader for non readable file %s", file ) );
         }
         try {
-            channel = FileChannel.open(file, READ);
-        } catch (IOException e) {
-            throw new DataReadingException(format("Error creating FileDataReader instance for file %s", file), e);
+            channel = FileChannel.open( file, READ );
+        } 
+        catch ( IOException e ) {
+            throw new DataReadingException( format( "Error creating FileDataReader instance for file %s", file ), e );
         }
-        if (offset > 0) {
+        if ( offset > 0 ) {
             this.offset = offset;
-            position(offset);
-        } else {
+            position( offset );
+        } 
+        else {
             this.offset = offset;
         }
         this.maxLength = maxLength;
@@ -105,8 +113,9 @@ public class FileDataReader extends BaseDataReader {
     public final long position() throws DataReadingException {
         try {
             return channel.position();
-        } catch (IOException e) {
-            throw new DataReadingException("Unable to get the random access file position", e);
+        } 
+        catch ( IOException e ) {
+            throw new DataReadingException( "Unable to get the random access file position", e );
         }
     }
 
@@ -116,9 +125,10 @@ public class FileDataReader extends BaseDataReader {
     @Override
     public long size() throws DataReadingException {
         try {
-            return Math.min(channel.size(), (offset + maxLength));
-        } catch (IOException e) {
-            throw new DataReadingException(e);
+            return Math.min( channel.size(), ( offset + maxLength ) );
+        } 
+        catch ( IOException e ) {
+            throw new DataReadingException( e );
         }
     }
 
@@ -126,11 +136,12 @@ public class FileDataReader extends BaseDataReader {
      * {@inheritDoc}
      */
     @Override
-    protected void setPosition(long position) throws DataReadingException {
+    protected void setPosition( long position ) throws DataReadingException {
         try {
-            channel.position(position);
-        } catch (IOException e) {
-            throw new DataReadingException(e);
+            channel.position( position );
+        } 
+        catch ( IOException e ) {
+            throw new DataReadingException( e );
         }
     }
 
@@ -138,11 +149,11 @@ public class FileDataReader extends BaseDataReader {
      * {@inheritDoc}
      */
     @Override
-    protected int readData(ByteBuffer buffer) throws DataReadingException {
+    protected int readData( ByteBuffer buffer ) throws DataReadingException {
         try {
-            return channel.read(buffer);
-        } catch (IOException e) {
-            throw new DataReadingException(e);
+            return channel.read( buffer );
+        } catch ( IOException e ) {
+            throw new DataReadingException( e );
         }
     }
 
@@ -159,7 +170,7 @@ public class FileDataReader extends BaseDataReader {
      */
     @Override
     public final void close() throws IOException {
-        if (channel != null && channel.isOpen()) {
+        if ( channel != null && channel.isOpen() ) {
             channel.close();
         }
     }

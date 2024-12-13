@@ -27,12 +27,14 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.Optional;
 
 /**
- * {@link RootEntry} for a CDN based CASC, relating the hash of a filename to the checksum of the content of a file.
+ * 파일이름 해시키와 파일 내용 해시키 맵핑 및 관련 정보 저장 클래스 {@link RootEntry} for a CDN based CASC,
+ * relating the hash of a filename to the checksum of the content of a file.
  *
  * @author Barre Dijkstra
  * @see nl.salp.warcraft4j.casc.RootEntry
  */
 public class CascRootEntry implements RootEntry {
+
     /** The hash of the filename. */
     private final long filenameHash;
     /** The checksum of the file content. */
@@ -55,8 +57,9 @@ public class CascRootEntry implements RootEntry {
      *
      * @throws IllegalArgumentException When invalid data is provided.
      */
-    public CascRootEntry(long filenameHash, ContentChecksum contentChecksum, long blockFlags) throws IllegalArgumentException {
-        this(filenameHash, contentChecksum, blockFlags, 0, 0);
+    public CascRootEntry( long filenameHash, ContentChecksum contentChecksum, long blockFlags )
+            throws IllegalArgumentException {
+        this( filenameHash, contentChecksum, blockFlags, 0, 0 );
     }
 
     /**
@@ -70,14 +73,15 @@ public class CascRootEntry implements RootEntry {
      *
      * @throws IllegalArgumentException When invalid data is provided.
      */
-    public CascRootEntry(long filenameHash, ContentChecksum contentChecksum, long blockFlags, long blockUnknown, long entryUnknown) throws IllegalArgumentException {
-        this.filenameHash = filenameHash;
-        this.contentChecksum =
-                Optional.ofNullable(contentChecksum).orElseThrow(() -> new IllegalArgumentException("Unable to create a root file entry with a null content checksum"));
-        this.blockFlags = blockFlags;
-        this.blockUnknown = blockUnknown;
-        this.entryUnknown = entryUnknown;
-        this.hash = (int) (filenameHash & 0xFFFFFFFF);
+    public CascRootEntry( long filenameHash, ContentChecksum contentChecksum, long blockFlags, long blockUnknown, long entryUnknown ) throws IllegalArgumentException 
+    {
+        this.filenameHash       = filenameHash;
+        this.contentChecksum    = Optional.ofNullable( contentChecksum ).orElseThrow( () -> new IllegalArgumentException(
+                "Unable to create a root file entry with a null content checksum" ) );
+        this.blockFlags         = blockFlags;
+        this.blockUnknown       = blockUnknown;
+        this.entryUnknown       = entryUnknown;
+        this.hash               = ( int )( filenameHash & 0xFFFFFFFF );
     }
 
     /**
@@ -109,7 +113,7 @@ public class CascRootEntry implements RootEntry {
      */
     @Override
     public Optional<CascLocale> getLocale() {
-        return CascLocale.getLocale(blockFlags);
+        return CascLocale.getLocale( blockFlags );
     }
 
     /**
@@ -124,8 +128,8 @@ public class CascRootEntry implements RootEntry {
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public boolean equals( Object obj ) {
+        return EqualsBuilder.reflectionEquals( this, obj );
     }
 
     /**
@@ -133,6 +137,6 @@ public class CascRootEntry implements RootEntry {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return ToStringBuilder.reflectionToString( this );
     }
 }

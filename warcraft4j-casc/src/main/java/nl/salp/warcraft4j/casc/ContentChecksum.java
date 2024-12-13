@@ -23,25 +23,30 @@ import nl.salp.warcraft4j.util.Checksum;
 import static java.lang.String.format;
 
 /**
+ * 16 바이트 해시
  * {@link Checksum} implementation for the contents of a CASC file.
  *
  * @author Barre Dijkstra
  */
 public class ContentChecksum extends Checksum {
+
     /** The length of the checksum in bytes. */
     public static final int CHECKSUM_LENGTH = 16;
 
     /**
      * Create a new checksum instance.
      *
-     * @param checksum The checksum.
+     * @param checksum 16 바이트 해시키 The checksum.
      *
      * @throws IllegalArgumentException When the checksum is invalid.
      */
-    public ContentChecksum(byte[] checksum) throws IllegalArgumentException {
-        super(checksum);
-        if (checksum.length != CHECKSUM_LENGTH) {
-            throw new IllegalArgumentException(format("Unable to create a %d-byte content checksum from a %d byte array.", CHECKSUM_LENGTH, checksum.length));
+    public ContentChecksum( byte[] checksum ) throws IllegalArgumentException {
+        super( checksum );
+        
+        if ( checksum.length != CHECKSUM_LENGTH ) {
+            throw new IllegalArgumentException(
+                    format( "Unable to create a %d-byte content checksum from a %d byte array.", CHECKSUM_LENGTH,
+                            checksum.length ) );
         }
     }
 }

@@ -29,7 +29,8 @@ import java.util.function.Supplier;
  * @author Barre Dijkstra
  */
 public interface DataReaderProvider {
-    Supplier<DataReader> getDataReader(String uri) throws CascParsingException;
+    
+    Supplier<DataReader> getDataReader( String uri ) throws CascParsingException;
 
-    Supplier<DataReader> getDataReader(String uri, long offset, long length) throws CascParsingException;
+    Supplier<DataReader> getDataReader( String uri, long offset, long length ) throws CascParsingException;
 }

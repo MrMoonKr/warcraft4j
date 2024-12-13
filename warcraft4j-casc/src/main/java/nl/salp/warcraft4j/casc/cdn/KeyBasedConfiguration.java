@@ -35,13 +35,16 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
+ * 환경설정 파일 파싱된 결과 저장 클래스.  
  * Parsed key based configuration from a file.
  *
  * @author Barre Dijkstra
  */
 public class KeyBasedConfiguration {
+
     /** The logger instance. */
     private static final Logger LOGGER = LoggerFactory.getLogger( BaseCdnCascConfig.class );
+
     /** The configuration parser to use. */
     private final ConfigParser configParser;
     /**
@@ -49,25 +52,25 @@ public class KeyBasedConfiguration {
      * file.
      */
     private final Supplier<DataReader> dataReaderSupplier;
+
     /** The parsed values. */
     private Map<String, List<String>> values;
 
     /**
      * Create a new instance.
      *
-     * @param configParser       The parser for the configuration file.
-     * @param dataReaderSupplier The supplier for the {@link DataReader} to use to
+     * @param configParser       데이터 파서. The parser for the configuration file.
+     * @param dataReaderSupplier 데이터 제공. The supplier for the {@link DataReader} to use to
      *                           read the configuration file.
      *
      * @throws IllegalArgumentException When an invalid parser or data reader have
      *                                  been provided.
      */
     public KeyBasedConfiguration( ConfigParser configParser, Supplier<DataReader> dataReaderSupplier ) {
-        this.configParser = Optional.ofNullable( configParser ).orElseThrow(
-                () -> new IllegalArgumentException( "Unable to create a configuration instance with a null parser." ) );
+        this.configParser = Optional.ofNullable( configParser )
+                .orElseThrow( () -> new IllegalArgumentException( "Unable to create a configuration instance with a null parser." ) );
         this.dataReaderSupplier = Optional.ofNullable( dataReaderSupplier )
-                .orElseThrow( () -> new IllegalArgumentException(
-                        "Unable to create a configuration instance with a null DataReader supplier." ) );
+                .orElseThrow( () -> new IllegalArgumentException( "Unable to create a configuration instance with a null DataReader supplier." ) );
     }
 
     /**
@@ -80,7 +83,9 @@ public class KeyBasedConfiguration {
      * @return Optional containing the first entry of the list if available.
      */
     private static <T> Optional<T> getFirstEntry( List<T> list ) {
-        return Optional.ofNullable( list ).filter( l -> !l.isEmpty() ).map( l -> l.get( 0 ) );
+        return Optional.ofNullable( list )
+                .filter( l -> !l.isEmpty() )
+                .map( l -> l.get( 0 ) );
     }
 
     /**
@@ -93,7 +98,9 @@ public class KeyBasedConfiguration {
      * @return Optional containing the last entry of the list if available.
      */
     private static <T> Optional<T> getLastEntry( List<T> list ) {
-        return Optional.ofNullable( list ).filter( l -> !l.isEmpty() ).map( l -> l.get( l.size() - 1 ) );
+        return Optional.ofNullable( list )
+                .filter( l -> !l.isEmpty() )
+                .map( l -> l.get( l.size() - 1 ) );
 
     }
 
@@ -107,7 +114,9 @@ public class KeyBasedConfiguration {
      * @return The list of the transformed strings.
      */
     private static <T> List<T> transform( List<String> strings, Function<String, T> transformer ) {
-        return strings.stream().map( transformer ).collect( Collectors.toList() );
+        return strings.stream()
+                .map( transformer )
+                .collect( Collectors.toList() );
     }
 
     /**
@@ -151,7 +160,8 @@ public class KeyBasedConfiguration {
         if ( values == null ) {
             try ( DataReader reader = dataReaderSupplier.get() ) {
                 values = configParser.parse( reader );
-            } catch ( IOException e ) {
+            } 
+            catch ( IOException e ) {
                 throw new CascParsingException( "Error parsing configuration file", e );
             }
         }
@@ -337,17 +347,21 @@ public class KeyBasedConfiguration {
          */
         @Override
         public Map<String, List<String>> parse( DataReader reader ) throws IOException, CascParsingException {
-            Map<String, List<String>> values = new HashMap<>();
+
+            Map<String, List<String>> values = new HashMap<>(); // key, value 저장
+
             while ( reader.hasRemaining() ) {
                 String line = reader.readNext( DataTypeFactory.getStringLine() ).trim();
                 if ( !line.isEmpty() && !line.startsWith( "#" ) ) {
                     String[] tokens = line.split( "=" );
-                    String key = tokens[0].trim();
-                    String value = tokens[1].trim();
+                    String key      = tokens[0].trim();
+                    String value    = tokens[1].trim();
                     values.put( key, Arrays.asList( value.split( " " ) ) );
+
                     LOGGER.trace( "Parsed line {} to [key: {}, values: {}]", line, key, values.get( key ) );
                 }
             }
+
             return values;
         }
     }
@@ -362,9 +376,11 @@ public class KeyBasedConfiguration {
          */
         @Override
         public Map<String, List<String>> parse( DataReader reader ) throws IOException, CascParsingException {
+            
             Map<String, List<String>> values = new HashMap<>();
             Map<Integer, String> headerIndexes = new HashMap<>();
             boolean header = true;
+
             while ( reader.hasRemaining() ) {
                 String line = reader.readNext( DataTypeFactory.getStringLine() ).trim();
                 if ( !line.isEmpty() ) {
@@ -388,6 +404,7 @@ public class KeyBasedConfiguration {
                     header = false;
                 }
             }
+
             return values;
         }
     }

@@ -34,33 +34,41 @@ import static java.lang.String.format;
  * @see nl.salp.warcraft4j.io.DataReader
  */
 public abstract class BaseDataReader implements DataReader {
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public void position(long position) throws DataReadingException, UnsupportedOperationException {
-        if (!isRandomAccessSupported() && position < position()) {
-            throw new UnsupportedOperationException(
-                    format("Unable to position the reader to %d, position is before current reading position and random access is not supported.", position));
+    public void position( long position ) throws DataReadingException, UnsupportedOperationException {
+
+        if ( !isRandomAccessSupported() && position < position() ) {
+            throw new UnsupportedOperationException( format(
+                    "Unable to position the reader to %d, position is before current reading position and random access is not supported.",
+                    position ) );
         }
-        if (position > size()) {
-            throw new DataReadingException(format("Error setting the reader position to %d, position is after the end of the available data.", position));
-        } else if (position < 0) {
-            throw new DataReadingException(format("Error setting the reader position to %d, position is before the start of the data.", position));
+        if ( position > size() ) {
+            throw new DataReadingException(
+                    format( "Error setting the reader position to %d, position is after the end of the available data.",
+                            position ) );
+        } 
+        else if ( position < 0 ) {
+            throw new DataReadingException( format(
+                    "Error setting the reader position to %d, position is before the start of the data.", position ) );
         }
-        setPosition(position);
+        setPosition( position );
     }
 
     /**
      * Set the position of the underlying data provider to the given position.
      * <p>
-     * The position will never be negative, beyond the available data or before the current position in case of a non random access reader.
+     * The position will never be negative, beyond the available data or before the
+     * current position in case of a non random access reader.
      *
      * @param position The position to set the data provider to.
      *
      * @throws DataReadingException When setting the position failed.
      */
-    protected abstract void setPosition(long position) throws DataReadingException;
+    protected abstract void setPosition( long position ) throws DataReadingException;
 
     /**
      * {@inheritDoc}
@@ -82,57 +90,62 @@ public abstract class BaseDataReader implements DataReader {
      * {@inheritDoc}
      */
     @Override
-    public void skip(long bytes) throws DataReadingException, UnsupportedOperationException {
-        position(position() + bytes);
+    public void skip( long bytes ) throws DataReadingException, UnsupportedOperationException {
+        position( position() + bytes );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <T> T peek(DataType<T> dataType) throws DataReadingException, DataParsingException, UnsupportedOperationException {
-        return peek(dataType, dataType.getDefaultByteOrder());
+    public <T> T peek( DataType<T> dataType )
+            throws DataReadingException, DataParsingException, UnsupportedOperationException {
+        return peek( dataType, dataType.getDefaultByteOrder() );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <T> T peek(DataType<T> dataType, ByteOrder byteOrder) throws DataReadingException, DataParsingException, UnsupportedOperationException {
-        if (!isRandomAccessSupported()) {
-            throw new UnsupportedOperationException("Reader does not support random access positioning, can't peek a value.");
+    public <T> T peek( DataType<T> dataType, ByteOrder byteOrder )
+            throws DataReadingException, DataParsingException, UnsupportedOperationException {
+        if ( !isRandomAccessSupported() ) {
+            throw new UnsupportedOperationException(
+                    "Reader does not support random access positioning, can't peek a value." );
         }
         long marker = position();
         try {
-            return readNext(dataType, byteOrder);
-        } finally {
-            position(marker);
+            return readNext( dataType, byteOrder );
+        } 
+        finally {
+            position( marker );
         }
     }
 
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public <T> T readNext(DataType<T> dataType) throws DataReadingException, DataParsingException {
-        return readNext(dataType, dataType.getDefaultByteOrder());
+    public <T> T readNext( DataType<T> dataType ) throws DataReadingException, DataParsingException {
+        return readNext( dataType, dataType.getDefaultByteOrder() );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <T> T readNext(DataType<T> dataType, ByteOrder byteOrder) throws DataReadingException, DataParsingException {
+    public <T> T readNext( DataType<T> dataType, ByteOrder byteOrder )
+            throws DataReadingException, DataParsingException {
         ByteBuffer buffer;
-        if (dataType.isVariableLength()) {
-            buffer = getVarLenBuffer(dataType);
-        } else {
-            buffer = ByteBuffer.allocate(dataType.getLength());
-            readData(buffer);
+        if ( dataType.isVariableLength() ) {
+            buffer = getVarLenBuffer( dataType );
+        } 
+        else {
+            buffer = ByteBuffer.allocate( dataType.getLength() );
+            readData( buffer );
         }
         buffer.rewind();
-        return dataType.readNext(buffer, byteOrder);
+        return dataType.readNext( buffer, byteOrder );
     }
 
     /**
@@ -145,22 +158,25 @@ public abstract class BaseDataReader implements DataReader {
      *
      * @throws DataReadingException When reading the variable sized data failed.
      */
-    private <T> ByteBuffer getVarLenBuffer(DataType<T> dataType) throws DataReadingException {
-        try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {
+    private <T> ByteBuffer getVarLenBuffer( DataType<T> dataType ) throws DataReadingException {
+
+        try ( ByteArrayOutputStream byteOut = new ByteArrayOutputStream() ) {
             boolean done = false;
-            while (!done) {
-                ByteBuffer buffer = ByteBuffer.wrap(new byte[1]);
-                if (readData(buffer) > 0) {
-                    byte value = buffer.get(0);
-                    byteOut.write(value);
-                    done = dataType.isVariableLengthTerminator(value);
-                } else {
+            while ( !done ) {
+                ByteBuffer buffer = ByteBuffer.wrap( new byte[1] );
+                if ( readData( buffer ) > 0 ) {
+                    byte value = buffer.get( 0 );
+                    byteOut.write( value );
+                    done = dataType.isVariableLengthTerminator( value );
+                } 
+                else {
                     done = true;
                 }
             }
-            return ByteBuffer.wrap(byteOut.toByteArray());
-        } catch (IOException e) {
-            throw new DataReadingException(e);
+            return ByteBuffer.wrap( byteOut.toByteArray() );
+        } 
+        catch ( IOException e ) {
+            throw new DataReadingException( e );
         }
     }
 
@@ -173,23 +189,25 @@ public abstract class BaseDataReader implements DataReader {
      *
      * @throws DataReadingException When reading the data failed.
      */
-    protected abstract int readData(ByteBuffer buffer) throws DataReadingException;
+    protected abstract int readData( ByteBuffer buffer ) throws DataReadingException;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <T> T read(DataType<T> dataType, long position) throws DataReadingException, DataParsingException, UnsupportedOperationException {
-        position(position);
-        return readNext(dataType);
+    public <T> T read( DataType<T> dataType, long position )
+            throws DataReadingException, DataParsingException, UnsupportedOperationException {
+        position( position );
+        return readNext( dataType );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <T> T read(DataType<T> dataType, long position, ByteOrder byteOrder) throws DataReadingException, DataParsingException, UnsupportedOperationException {
-        position(position);
-        return readNext(dataType, byteOrder);
+    public <T> T read( DataType<T> dataType, long position, ByteOrder byteOrder )
+            throws DataReadingException, DataParsingException, UnsupportedOperationException {
+        position( position );
+        return readNext( dataType, byteOrder );
     }
 }

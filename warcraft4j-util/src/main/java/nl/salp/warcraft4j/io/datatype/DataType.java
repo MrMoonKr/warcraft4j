@@ -25,11 +25,13 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Data type for reading various types of data types (with different byte ordering).
+ * Data type for reading various types of data types (with different byte
+ * ordering).
  *
  * @author Barre Dijkstra
  */
 public abstract class DataType<T> {
+    
     /** The default character set. */
     public static final Charset DEFAULT_CHARACTERSET = StandardCharsets.US_ASCII;
     /** The default ByteOrder used by Java (network byte order). */
@@ -42,9 +44,10 @@ public abstract class DataType<T> {
      *
      * @return The new array.
      *
-     * @throws UnsupportedOperationException When the creation of an array is not supported (e.g. for array wrappers).
+     * @throws UnsupportedOperationException When the creation of an array is not
+     *                                       supported (e.g. for array wrappers).
      */
-    protected abstract T[] newArray(int entries) throws UnsupportedOperationException;
+    protected abstract T[] newArray( int entries ) throws UnsupportedOperationException;
 
     /**
      * Get a native array type for the data type.
@@ -53,10 +56,12 @@ public abstract class DataType<T> {
      *
      * @return The DataType that supports parsing to a native array of the type.
      *
-     * @throws UnsupportedOperationException When the creation of a native array type is not supported (e.g. for array types).
+     * @throws UnsupportedOperationException When the creation of a native array
+     *                                       type is not supported (e.g. for array
+     *                                       types).
      */
-    public DataType<T[]> asArrayType(int entries) throws UnsupportedOperationException {
-        return new ArrayWrapper<>(this, entries);
+    public DataType<T[]> asArrayType( int entries ) throws UnsupportedOperationException {
+        return new ArrayWrapper<>( this, entries );
     }
 
     /**
@@ -85,7 +90,7 @@ public abstract class DataType<T> {
      *
      * @return The {@code true} if the byte is a terminator byte.
      */
-    public boolean isVariableLengthTerminator(byte b) {
+    public boolean isVariableLengthTerminator( byte b ) {
         return b == 0x0;
     }
 
@@ -105,17 +110,18 @@ public abstract class DataType<T> {
      *
      * @return The next value.
      */
-    public T readNext(ByteBuffer buffer) {
-        return readNext(buffer, getDefaultByteOrder());
+    public T readNext( ByteBuffer buffer ) {
+        return readNext( buffer, getDefaultByteOrder() );
     }
 
     /**
-     * Read the next value in the given data type from the given ByteBuffer that is in the given byte order.
+     * Read the next value in the given data type from the given ByteBuffer that is
+     * in the given byte order.
      *
      * @param buffer    The ByteBuffer.
      * @param byteOrder The byte order the buffer is in.
      *
      * @return The next value.
      */
-    public abstract T readNext(ByteBuffer buffer, ByteOrder byteOrder);
+    public abstract T readNext( ByteBuffer buffer, ByteOrder byteOrder );
 }

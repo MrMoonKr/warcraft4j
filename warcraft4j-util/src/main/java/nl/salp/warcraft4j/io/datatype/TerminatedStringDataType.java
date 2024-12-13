@@ -25,11 +25,16 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
+
 /**
- * {@link DataType} implementation for a zero-terminated string or a string till the end of the buffer.
+ * {@link DataType} implementation for a zero-terminated string or a string till
+ * the end of the buffer.
  */
 class TerminatedStringDataType extends DataType<String> {
-    /** The length of the terminated String in bytes, set to -1 to indicate a variable length. */
+    /**
+     * The length of the terminated String in bytes, set to -1 to indicate a
+     * variable length.
+     */
     private static final int LENGTH_BYTES = -1;
     /** The character to decode the String with. */
     private final Charset charset;
@@ -37,10 +42,11 @@ class TerminatedStringDataType extends DataType<String> {
     private final int bytesPerChar;
 
     /**
-     * Create a new TerminatedStringDataType with the default character set ({@link DataType#DEFAULT_CHARACTERSET}).
+     * Create a new TerminatedStringDataType with the default character set
+     * ({@link DataType#DEFAULT_CHARACTERSET}).
      */
     public TerminatedStringDataType() {
-        this(DEFAULT_CHARACTERSET);
+        this( DEFAULT_CHARACTERSET );
     }
 
     /**
@@ -48,16 +54,16 @@ class TerminatedStringDataType extends DataType<String> {
      *
      * @param charset The character set to use for decoding the characters.
      */
-    public TerminatedStringDataType(Charset charset) {
+    public TerminatedStringDataType( Charset charset ) {
         this.charset = charset;
-        this.bytesPerChar = DataTypeUtil.getAverageBytesPerCharacter(charset);
+        this.bytesPerChar = DataTypeUtil.getAverageBytesPerCharacter( charset );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected String[] newArray(int entries) throws UnsupportedOperationException {
+    protected String[] newArray( int entries ) throws UnsupportedOperationException {
         return new String[entries];
     }
 
@@ -73,13 +79,13 @@ class TerminatedStringDataType extends DataType<String> {
      * {@inheritDoc}
      */
     @Override
-    public String readNext(ByteBuffer buffer, ByteOrder byteOrder) {
-        buffer.order(byteOrder);
+    public String readNext( ByteBuffer buffer, ByteOrder byteOrder ) {
+        buffer.order( byteOrder );
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         byte c;
-        while (buffer.hasRemaining() && (c = buffer.get()) != 0) {
-            byteStream.write(c);
+        while ( buffer.hasRemaining() && ( c = buffer.get() ) != 0 ) {
+            byteStream.write( c );
         }
-        return new String(byteStream.toByteArray(), charset);
+        return new String( byteStream.toByteArray(), charset );
     }
 }

@@ -44,8 +44,8 @@ public class FileDataReaderProvider implements DataReaderProvider {
      * @param uri The path of the file, either absolute or relative.
      */
     @Override
-    public Supplier<DataReader> getDataReader(String uri) throws CascParsingException {
-        return () -> new FileDataReader(toPath(uri));
+    public Supplier<DataReader> getDataReader( String uri ) throws CascParsingException {
+        return () -> new FileDataReader( toPath( uri ) );
     }
 
     /**
@@ -54,8 +54,8 @@ public class FileDataReaderProvider implements DataReaderProvider {
      * @param uri The path of the file, either absolute or relative.
      */
     @Override
-    public Supplier<DataReader> getDataReader(String uri, long offset, long length) throws CascParsingException {
-        return () -> new FileDataReader(toPath(uri), offset, length);
+    public Supplier<DataReader> getDataReader( String uri, long offset, long length ) throws CascParsingException {
+        return () -> new FileDataReader( toPath( uri ), offset, length );
     }
 
     /**
@@ -65,18 +65,20 @@ public class FileDataReaderProvider implements DataReaderProvider {
      *
      * @return The path to the file represented by the URI.
      *
-     * @throws CascParsingException When the URI is invalid or does not point to a valid, readable file.
+     * @throws CascParsingException When the URI is invalid or does not point to a
+     *                              valid, readable file.
      */
-    private Path toPath(String uri) throws CascParsingException {
-        if (isEmpty(uri)) {
-            throw new CascParsingException("Can't create a file reader for an empty path.");
+    private Path toPath( String uri ) throws CascParsingException {
+        if ( isEmpty( uri ) ) {
+            throw new CascParsingException( "Can't create a file reader for an empty path." );
         }
-        Path path = Paths.get(uri);
-        if (Files.notExists(path) || !Files.isRegularFile(path)) {
-            throw new CascParsingException(format("Can't create a file reader for %s, file either doesn't exist or is not a file.", uri));
+        Path path = Paths.get( uri );
+        if ( Files.notExists( path ) || !Files.isRegularFile( path ) ) {
+            throw new CascParsingException(
+                    format( "Can't create a file reader for %s, file either doesn't exist or is not a file.", uri ) );
         }
-        if (!Files.isReadable(path)) {
-            throw new CascParsingException(format("Can't create a file reader for non-readable file %s", uri));
+        if ( !Files.isReadable( path ) ) {
+            throw new CascParsingException( format( "Can't create a file reader for non-readable file %s", uri ) );
         }
         return path;
     }

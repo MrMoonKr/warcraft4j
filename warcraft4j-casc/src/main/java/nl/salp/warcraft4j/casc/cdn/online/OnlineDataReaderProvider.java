@@ -34,15 +34,15 @@ public class OnlineDataReaderProvider implements DataReaderProvider {
      * {@inheritDoc}
      */
     @Override
-    public Supplier<DataReader> getDataReader(String url) {
-        return () -> new CachedHttpDataReader(url);
+    public Supplier<DataReader> getDataReader( String url ) {
+        return () -> new CachedHttpDataReader( url );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Supplier<DataReader> getDataReader(String url, long offset, long length) {
-        return () -> new CachedHttpDataReader(url, offset, length);
+    public Supplier<DataReader> getDataReader( String url, long offset, long length ) {
+        return () -> new CachedHttpDataReader( url, offset, length );
     }
 }

@@ -38,35 +38,39 @@ import static java.lang.String.format;
  * @author Barre Dijkstra
  */
 public class HttpDataReader extends BaseDataReader {
+
     private CloseableHttpClient httpClient;
     private CloseableHttpResponse response;
     private InputStream responseStream;
     private long position;
     private long length;
 
-    public HttpDataReader(String url) throws DataParsingException {
+    public HttpDataReader( String url ) throws DataParsingException {
         try {
             httpClient = HttpClients.createDefault();
-            response = httpClient.execute(new HttpGet(URI.create(url)));
-            responseStream = getResponseStream(url, response);
-        } catch (Exception e) {
+            response = httpClient.execute( new HttpGet( URI.create( url ) ) );
+            responseStream = getResponseStream( url, response );
+        } 
+        catch ( Exception e ) {
             try {
                 close();
-            } catch (IOException ioe) {
+            } catch ( IOException ioe ) {
                 // Ignore.
             }
-            throw new DataParsingException(e);
+            throw new DataParsingException( e );
         }
     }
 
-    private InputStream getResponseStream(String url, CloseableHttpResponse response) throws IOException {
+    private InputStream getResponseStream( String url, CloseableHttpResponse response ) throws IOException {
+
         StatusLine statusLine = response.getStatusLine();
-        if (statusLine.getStatusCode() > 300) {
-            throw new DataParsingException(String.format("Error opening HTTP data reader for %s: error %d: %s", url, statusLine.getStatusCode(), statusLine.getReasonPhrase()));
+        if ( statusLine.getStatusCode() > 300 ) {
+            throw new DataParsingException( String.format( "Error opening HTTP data reader for %s: error %d: %s", url,
+                    statusLine.getStatusCode(), statusLine.getReasonPhrase() ) );
         }
         HttpEntity entity = response.getEntity();
-        if (entity == null) {
-            throw new DataParsingException(format("HTTP data reader received no response from for %s", url));
+        if ( entity == null ) {
+            throw new DataParsingException( format( "HTTP data reader received no response from for %s", url ) );
         }
         length = entity.getContentLength();
         return entity.getContent();
@@ -84,8 +88,8 @@ public class HttpDataReader extends BaseDataReader {
      * {@inheritDoc}
      */
     @Override
-    protected void setPosition(long position) throws DataReadingException {
-        skip(position - this.position);
+    protected void setPosition( long position ) throws DataReadingException {
+        skip( position - this.position );
     }
 
     /**
@@ -110,21 +114,23 @@ public class HttpDataReader extends BaseDataReader {
      * {@inheritDoc}
      */
     @Override
-    public void skip(long bytes) throws DataReadingException, UnsupportedOperationException {
-        if (bytes < 0) {
-            throw new UnsupportedOperationException(format("Unable to skip %d bytes.", bytes));
+    public void skip( long bytes ) throws DataReadingException, UnsupportedOperationException {
+        if ( bytes < 0 ) {
+            throw new UnsupportedOperationException( format( "Unable to skip %d bytes.", bytes ) );
         }
-        if (bytes > remaining()) {
-            throw new DataReadingException(format("Error skipping %d bytes from position %d with %d bytes available.", bytes, position, remaining()));
+        if ( bytes > remaining() ) {
+            throw new DataReadingException( format( "Error skipping %d bytes from position %d with %d bytes available.",
+                    bytes, position, remaining() ) );
         }
         try {
             long remaining = bytes;
-            while (remaining > 0) {
-                remaining -= responseStream.skip(remaining);
+            while ( remaining > 0 ) {
+                remaining -= responseStream.skip( remaining );
             }
             position += bytes;
-        } catch (IOException e) {
-            throw new DataReadingException(e);
+        } 
+        catch ( IOException e ) {
+            throw new DataReadingException( e );
         }
     }
 
@@ -132,20 +138,22 @@ public class HttpDataReader extends BaseDataReader {
      * {@inheritDoc}
      */
     @Override
-    protected int readData(ByteBuffer buffer) throws DataReadingException {
+    protected int readData( ByteBuffer buffer ) throws DataReadingException {
         try {
             int read = 0;
             byte[] dataArray;
-            if (buffer.hasArray()) {
-                read = responseStream.read(buffer.array());
-            } else {
+            if ( buffer.hasArray() ) {
+                read = responseStream.read( buffer.array() );
+            } 
+            else {
                 byte[] data = new byte[buffer.capacity()];
-                read = responseStream.read(data);
-                buffer.put(data);
+                read = responseStream.read( data );
+                buffer.put( data );
             }
             return read;
-        } catch (IOException e) {
-            throw new DataReadingException(e);
+        } 
+        catch ( IOException e ) {
+            throw new DataReadingException( e );
         }
     }
 
@@ -154,24 +162,27 @@ public class HttpDataReader extends BaseDataReader {
      */
     @Override
     public void close() throws IOException {
-        if (this.responseStream != null) {
+        if ( this.responseStream != null ) {
             try {
                 this.responseStream.close();
-            } catch (IOException e) {
+            } 
+            catch ( IOException e ) {
                 // Ignore.
             }
         }
-        if (this.response != null) {
+        if ( this.response != null ) {
             try {
                 this.response.close();
-            } catch (IOException e) {
+            } 
+            catch ( IOException e ) {
                 // Ignore.
             }
         }
-        if (this.httpClient != null) {
+        if ( this.httpClient != null ) {
             try {
                 this.httpClient.close();
-            } catch (IOException e) {
+            } 
+            catch ( IOException e ) {
                 // Ignore.
             }
         }
