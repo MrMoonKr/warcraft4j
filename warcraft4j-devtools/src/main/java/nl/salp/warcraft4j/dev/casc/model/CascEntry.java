@@ -41,6 +41,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * @author Barre Dijkstra
  */
 public class CascEntry {
+
     private transient CdnCascContext cascContext;
     private final long hashCode;
     private String filename;
@@ -50,26 +51,33 @@ public class CascEntry {
     private List<ContentChecksum> contentChecksums;
     private List<FileKey> fileKeys;
 
-    public CascEntry(long hashCode, CdnCascContext cascContext) throws IllegalArgumentException {
-        if (hashCode == 0 || hashCode == JenkinsHash.HASH_EMPTY_VALUE_HASHLITTLE2) {
-            throw new IllegalArgumentException("Unable to create a CascEntry for a hashcode for an empty value.");
+    /**
+     * 
+     * @param hashCode JenkinsHash
+     * @param cascContext
+     * @throws IllegalArgumentException
+     */
+    public CascEntry( long hashCode, CdnCascContext cascContext ) throws IllegalArgumentException 
+    {
+        if ( hashCode == 0 || hashCode == JenkinsHash.HASH_EMPTY_VALUE_HASHLITTLE2 ) {
+            throw new IllegalArgumentException( "Unable to create a CascEntry for a hashcode for an empty value." );
         }
-        if (cascContext == null) {
-            throw new IllegalArgumentException("Unable to create a CascEntry from a null CdnCascContext.");
+        if ( cascContext == null ) {
+            throw new IllegalArgumentException( "Unable to create a CascEntry from a null CdnCascContext." );
         }
-        this.hashCode = hashCode;
-        this.cascContext = cascContext;
-        this.inCasc = cascContext.isRegistered(hashCode);
-        this.cascReferenceValid = cascContext.isRegisteredData(hashCode);
+        this.hashCode           = hashCode;
+        this.cascContext        = cascContext;
+        this.inCasc             = cascContext.isRegistered( hashCode );
+        this.cascReferenceValid = cascContext.isRegisteredData( hashCode );
     }
 
-    public CascEntry(String filename, CdnCascContext cascContext) throws IllegalArgumentException {
-        this(Optional.ofNullable(filename)
-                        .filter(StringUtils::isNotEmpty)
-                        .map(CdnCascContext::hashFilename)
-                        .orElseThrow(() -> new IllegalArgumentException("Unable to create a CascEntry for an empty filename")),
-                cascContext);
-        this.filename = EntryStore.cleanFilename(filename).orElse(null);
+    public CascEntry( String filename, CdnCascContext cascContext ) throws IllegalArgumentException 
+    {
+        this( Optional.ofNullable( filename )
+                .filter( StringUtils::isNotEmpty ).map( CdnCascContext::hashFilename )
+                .orElseThrow( () -> new IllegalArgumentException( "Unable to create a CascEntry for an empty filename" ) ), cascContext );
+
+        this.filename = EntryStore.cleanFilename( filename ).orElse( null );
     }
 
     protected CdnCascContext getCascContext() throws IllegalStateException {
@@ -81,23 +89,19 @@ public class CascEntry {
     }
 
     public Optional<String> getFilename() {
-        if (isEmpty(filename)) {
-            this.filename = cascContext.getFilename(hashCode)
-                    .flatMap(EntryStore::cleanFilename)
-                    .orElse(null);
+        if ( isEmpty( filename ) ) {
+            this.filename = cascContext.getFilename( hashCode ).flatMap( EntryStore::cleanFilename ).orElse( null );
         }
 
-        return Optional.of(filename);
+        return Optional.of( filename );
     }
 
     public Optional<String> getExtension() {
-        return getFilename()
-                .flatMap(EntryStore::getExtension);
+        return getFilename().flatMap( EntryStore::getExtension );
     }
 
     public Optional<String> getFilePath() {
-        return getFilename()
-                .flatMap(EntryStore::getPath);
+        return getFilename().flatMap( EntryStore::getPath );
     }
 
     public boolean isInCasc() {
@@ -109,20 +113,22 @@ public class CascEntry {
     }
 
     public Optional<FileHeader> getFileHeader() {
-        if (fileHeader == null && isCascReferenceValid()) {
-            fileHeader = FileHeader.parse(() -> getCascContext().getFileDataReader(hashCode));
+        if ( fileHeader == null && isCascReferenceValid() ) {
+            fileHeader = FileHeader.parse( () -> getCascContext().getFileDataReader( hashCode ) );
         }
-        return Optional.ofNullable(fileHeader);
+        return Optional.ofNullable( fileHeader );
     }
 
     public List<ContentChecksum> getContentChecksums() {
         List<ContentChecksum> checksums;
-        if (contentChecksums == null && isCascReferenceValid()) {
-            contentChecksums = getCascContext().getContentChecksums(hashCode);
+        if ( contentChecksums == null && isCascReferenceValid() ) {
+            contentChecksums = getCascContext().getContentChecksums( hashCode );
             checksums = contentChecksums;
-        } else if (contentChecksums == null) {
+        } 
+        else if ( contentChecksums == null ) {
             checksums = Collections.emptyList();
-        } else {
+        } 
+        else {
             checksums = contentChecksums;
         }
         return checksums;
@@ -134,15 +140,15 @@ public class CascEntry {
 
     public List<FileKey> getFileKeys() {
         List<FileKey> keys;
-        if (fileKeys == null && isCascReferenceValid()) {
-            fileKeys = getContentChecksums().stream()
-                    .map(getCascContext()::getFileKey)
-                    .map(Optional::get)
-                    .collect(Collectors.toList());
+        if ( fileKeys == null && isCascReferenceValid() ) {
+            fileKeys = getContentChecksums().stream().map( getCascContext()::getFileKey ).map( Optional::get )
+                    .collect( Collectors.toList() );
             keys = fileKeys;
-        } else if (contentChecksums == null) {
+        } 
+        else if ( contentChecksums == null ) {
             keys = Collections.emptyList();
-        } else {
+        } 
+        else {
             keys = fileKeys;
         }
         return keys;
@@ -154,17 +160,17 @@ public class CascEntry {
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return HashCodeBuilder.reflectionHashCode( this );
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public boolean equals( Object obj ) {
+        return EqualsBuilder.reflectionEquals( this, obj );
     }
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return ToStringBuilder.reflectionToString( this );
     }
 
 }

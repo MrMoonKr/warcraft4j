@@ -51,12 +51,15 @@ import static java.lang.String.format;
  * @author Barre Dijkstra
  */
 public class ListFileGenerator {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ListFileGenerator.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( ListFileGenerator.class );
+
     private static final String FILE_IN_LISTFILE = "listfile-wow6.txt";
     private static final String FILE_OUT_CASC_MISSING = "w4j-casc-missing-%s.txt";
     private static final String FILE_OUT_LISTFILE_INVALID = "w4j-listfile-invalid-%s.txt";
     private static final String FILE_OUT_CASC_INVALID = "w4j-casc-invalid-%s.txt";
     private static final String FILE_OUT_LISTFILE = "w4j-listfile-%s.txt";
+
     private final Warcraft4jConfig warcraft4jConfig;
     private final Path outputPath;
     private final Path fileListfile;
@@ -67,187 +70,243 @@ public class ListFileGenerator {
     private final ListFile listFile;
     private final EntryStore entryStore;
 
-    public ListFileGenerator(Path wowPath, Path outputPath, Path cachePath) throws IOException {
-        LOGGER.debug("Initialising listfile generator for installation path {}, cache path {} and using ouput directory {}", wowPath, outputPath,
-                cachePath);
-        this.warcraft4jConfig = initialiseConfig(wowPath, cachePath);
-        LOGGER.debug("Initialising casc context (branch: {}, region: {}, locale: {}, online: {}, caching: {})",
-                warcraft4jConfig.getBranch(), warcraft4jConfig.getRegion(), warcraft4jConfig.getLocale(), warcraft4jConfig.isOnline(), warcraft4jConfig.isCaching());
-        this.cascContext = initialiseCascContext(warcraft4jConfig);
+    public ListFileGenerator( Path wowPath, Path outputPath, Path cachePath ) throws IOException {
+
+        LOGGER.debug( "Initialising listfile generator for installation path {}, output path {} and using cache directory {}",
+                wowPath, 
+                outputPath, 
+                cachePath );
+
+        this.warcraft4jConfig = initialiseConfig( wowPath, cachePath );
+
+        LOGGER.debug( "Initialising casc context (branch: {}, region: {}, locale: {}, online: {}, caching: {})",
+                warcraft4jConfig.getBranch(), 
+                warcraft4jConfig.getRegion(), 
+                warcraft4jConfig.getLocale(),
+                warcraft4jConfig.isOnline(), 
+                warcraft4jConfig.isCaching() );
+
+        this.cascContext = initialiseCascContext( warcraft4jConfig );
 
         this.outputPath = outputPath;
-        String version = cascContext.getVersion().replace('.', '_');
-        LOGGER.debug("Initialising listfile from output path {} and output files with version {}", outputPath, version);
-        this.fileListfile = outputPath.resolve(format(FILE_OUT_LISTFILE, version));
-        this.fileListfileInvalidEntries = outputPath.resolve(format(FILE_OUT_LISTFILE_INVALID, version));
-        this.fileCascInvalidEntries = outputPath.resolve(format(FILE_OUT_CASC_INVALID, version));
-        this.fileCascUnknownEntries = outputPath.resolve(format(FILE_OUT_CASC_MISSING, version));
-        this.listFile = initialiseFiles(outputPath);
-        LOGGER.debug("Initialising entry store from CASC and listfile entries");
-        this.entryStore = new EntryStore(listFile, cascContext);
-        LOGGER.debug("Listfile generator initialised");
+
+        String version = cascContext.getVersion().replace( '.', '_' );
+        LOGGER.debug( "Initialising listfile from output path {} and output files with version {}", 
+                outputPath,
+                version );
+
+        this.fileListfile               = outputPath.resolve( format( FILE_OUT_LISTFILE, version ) );
+        this.fileListfileInvalidEntries = outputPath.resolve( format( FILE_OUT_LISTFILE_INVALID, version ) );
+        this.fileCascInvalidEntries     = outputPath.resolve( format( FILE_OUT_CASC_INVALID, version ) );
+        this.fileCascUnknownEntries     = outputPath.resolve( format( FILE_OUT_CASC_MISSING, version ) );
+
+        this.listFile = initialiseFiles( outputPath );
+
+        LOGGER.debug( "Initialising entry store from CASC and listfile entries" );
+        this.entryStore = new EntryStore( listFile, cascContext );
+        LOGGER.debug( "Listfile generator initialised" );
     }
 
-    private Warcraft4jConfig initialiseConfig(Path wowPath, Path cachePath) {
+    /**
+     * 앱 실행 환경 설정 구성.  
+     * @param wowPath 설치 폴더
+     * @param cachePath 캐시 폴더더
+     * @return
+     */
+    private Warcraft4jConfig initialiseConfig( Path wowPath, Path cachePath ) {
+
         boolean online = wowPath == null;
         boolean caching = cachePath != null;
-        Region region = Region.EUROPE;
+        Region region = Region.KOREA; //Region region = Region.EUROPE;
         Branch branch = Branch.LIVE;
-        Locale locale = Locale.EN_US;
+        Locale locale = Locale.KO_KR;//Locale locale = Locale.EN_US;
+
         Warcraft4jConfigBuilder builder = new Warcraft4jConfigBuilder()
-                .online(online)
-                .caching(caching)
-                .withRegion(region)
-                .withBranch(branch)
-                .withLocale(locale);
-        if (wowPath != null) {
-            builder.withWowDir(wowPath);
+                .online( online )
+                .caching( caching )
+                .withRegion( region )
+                .withBranch( branch )
+                .withLocale( locale );
+        if ( wowPath != null ) {
+            builder.withWowDir( wowPath );
         }
-        if (caching) {
-            builder.withCacheDir(cachePath);
+        if ( caching ) {
+            builder.withCacheDir( cachePath );
         }
+
         return builder.build();
-
     }
 
-    private CdnCascContext initialiseCascContext(Warcraft4jConfig warcraft4jConfig) throws IOException, IllegalArgumentException {
-        if (Files.exists(warcraft4jConfig.getWowInstallationDirectory())
-                && Files.isDirectory(warcraft4jConfig.getWowInstallationDirectory()) && Files.isReadable(warcraft4jConfig.getWowInstallationDirectory())) {
+    /**
+     * CASC 컨텍스트 구성.  
+     * @param warcraft4jConfig
+     * @return
+     * @throws IOException
+     * @throws IllegalArgumentException
+     */
+    private CdnCascContext initialiseCascContext( Warcraft4jConfig warcraft4jConfig ) throws IOException, IllegalArgumentException 
+    {
+        if ( Files.exists( warcraft4jConfig.getWowInstallationDirectory() ) && 
+                Files.isDirectory( warcraft4jConfig.getWowInstallationDirectory() ) && 
+                Files.isReadable( warcraft4jConfig.getWowInstallationDirectory() ) ) 
+        {
             CdnCascContext cascContext;
-            if (warcraft4jConfig.isOnline()) {
-                cascContext = new OnlineCdnCascContext(warcraft4jConfig);
-            } else {
-                cascContext = new LocalCdnCascContext(warcraft4jConfig);
+            if ( warcraft4jConfig.isOnline() ) {
+                cascContext = new OnlineCdnCascContext( warcraft4jConfig );
+            } 
+            else {
+                cascContext = new LocalCdnCascContext( warcraft4jConfig );
             }
+
             return cascContext;
-        } else {
-            throw new IllegalArgumentException(format("WoW installation directory %s is either not a directory or not readable and writable.",
-                    warcraft4jConfig.getWowInstallationDirectory()));
+        } 
+        else {
+            throw new IllegalArgumentException(
+                    format( "WoW installation directory %s is either not a directory or not readable and writable.",
+                            warcraft4jConfig.getWowInstallationDirectory() ) );
         }
     }
 
-    private ListFile initialiseFiles(Path outputDirectory) throws IOException, IllegalArgumentException {
+    /**
+     * "listfile-wow6.txt" 데이터 로딩
+     * @param outputDirectory
+     * @return
+     * @throws IOException
+     * @throws IllegalArgumentException
+     */
+    private ListFile initialiseFiles( Path outputDirectory ) throws IOException, IllegalArgumentException 
+    {
         ListFile listFile = ListFile.empty();
-        if (Files.exists(outputDirectory) && Files.isDirectory(outputDirectory) && Files.isReadable(outputDirectory) && Files.isWritable(outputDirectory)) {
-            Path listFileIn = outputDirectory.resolve(FILE_IN_LISTFILE);
-            if (Files.exists(listFileIn) && Files.isReadable(listFileIn) && Files.isRegularFile(listFileIn)) {
+
+        if ( Files.exists( outputDirectory ) && 
+                Files.isDirectory( outputDirectory ) && 
+                Files.isReadable( outputDirectory ) && 
+                Files.isWritable( outputDirectory ) ) 
+        {
+            Path listFileIn = outputDirectory.resolve( FILE_IN_LISTFILE );
+            if ( Files.exists( listFileIn ) && 
+                    Files.isReadable( listFileIn ) && 
+                    Files.isRegularFile( listFileIn ) ) 
+            {
                 long startTime = System.currentTimeMillis();
-                listFile = ListFile.fromFile(listFileIn);
-                LOGGER.debug("Parsed list file {} with {} files and {} hashes in {} ms",
-                        listFileIn, listFile.getFilenameCount(), listFile.getHashCount(), (System.currentTimeMillis() - startTime));
-            } else {
-                LOGGER.debug("Couldn't find or read list file {}, using an empty input.", listFileIn);
+                listFile = ListFile.fromFile( listFileIn );
+                LOGGER.debug( "Parsed list file {} with {} files and {} hashes in {} ms", listFileIn,
+                        listFile.getFilenameCount(), listFile.getHashCount(),
+                        ( System.currentTimeMillis() - startTime ) );
+            } 
+            else {
+                LOGGER.debug( "Couldn't find or read list file {}, using an empty input.", listFileIn );
             }
-        } else if (Files.notExists(outputDirectory)) {
-            Files.createDirectories(outputDirectory);
-            LOGGER.debug("Output directory {} does not exist, created it and using empty list file", outputDirectory);
-        } else {
-            throw new IllegalArgumentException(format("Output directory %s is either not a directory or not readable and writable.", outputDirectory));
+        } 
+        else if ( Files.notExists( outputDirectory ) ) // 폴더 없음 -> 생성성
+        {
+            Files.createDirectories( outputDirectory );
+            LOGGER.debug( "Output directory {} does not exist, created it and using empty list file", outputDirectory );
+        } 
+        else // 에러
+        {
+            throw new IllegalArgumentException( format(
+                    "Output directory %s is either not a directory or not readable and writable.", outputDirectory ) );
         }
+
         return listFile;
     }
 
     private Predicate<Long> filterCascValidHash() {
-        return (hash) -> cascContext.isRegisteredData(hash);
+        return ( hash ) -> cascContext.isRegisteredData( hash );
     }
 
     private Predicate<String> filterCascValidFilename() {
-        return (filename) -> cascContext.isRegisteredData(filename);
+        return ( filename ) -> cascContext.isRegisteredData( filename );
     }
 
     private Predicate<Long> filterCascKnownHash() {
-        return (hash) -> cascContext.isRegistered(hash);
+        return ( hash ) -> cascContext.isRegistered( hash );
     }
 
     private Predicate<String> filterCascKnownFilename() {
-        return (filename) -> cascContext.isRegistered(filename);
+        return ( filename ) -> cascContext.isRegistered( filename );
     }
 
     private Predicate<Long> filterListfileKnownHash() {
-        return (hash) -> listFile.getFilenames(hash).isPresent();
+        return ( hash ) -> listFile.getFilenames( hash ).isPresent();
     }
 
     private Predicate<String> filterListfileKnownFilename() {
         return listFile::isFileKnown;
     }
 
-    protected List<String> toSortedFilenames(Collection<Long> hashes, String unknownValue) {
-        return hashes.stream()
-                .filter(h -> h != null)
-                .filter(h -> h != 0)
-                .map(entryStore::getFilename)
-                .map(f -> f.orElse(unknownValue))
-                .sorted()
-                .collect(Collectors.toList());
+    protected List<String> toSortedFilenames( Collection<Long> hashes, String unknownValue ) {
+        return hashes.stream().filter( h -> h != null ).filter( h -> h != 0 ).map( entryStore::getFilename )
+                .map( f -> f.orElse( unknownValue ) ).sorted().collect( Collectors.toList() );
     }
 
     protected Set<Long> findCascValidEntries() {
-        LOGGER.trace("Collecting all valid CASC entries from {} CASC entries.", cascContext.getHashes().size());
-        Stream<Long> entriesStream = cascContext.getHashes().stream()
-                .filter(filterCascValidHash());
-        Set<Long> entries = entriesStream.collect(Collectors.toSet());
-        LOGGER.trace("Done collecting valid CASC entries, resulting in {} entries.", entries.size());
+        LOGGER.trace( "Collecting all valid CASC entries from {} CASC entries.", cascContext.getHashes().size() );
+        Stream<Long> entriesStream = cascContext.getHashes().stream().filter( filterCascValidHash() );
+        Set<Long> entries = entriesStream.collect( Collectors.toSet() );
+        LOGGER.trace( "Done collecting valid CASC entries, resulting in {} entries.", entries.size() );
         return entries;
     }
 
     protected Set<Long> findCascInvalidEntries() {
-        LOGGER.trace("Collecting all invalid CASC entries from {} CASC entries.", cascContext.getHashes().size());
-        Stream<Long> entriesStream = cascContext.getHashes().stream()
-                .filter(filterCascValidHash().negate());
-        Set<Long> entries = entriesStream.collect(Collectors.toSet());
-        LOGGER.trace("Done collecting invalid CASC entries, resulting in {} entries.", entries.size());
+        LOGGER.trace( "Collecting all invalid CASC entries from {} CASC entries.", cascContext.getHashes().size() );
+        Stream<Long> entriesStream = cascContext.getHashes().stream().filter( filterCascValidHash().negate() );
+        Set<Long> entries = entriesStream.collect( Collectors.toSet() );
+        LOGGER.trace( "Done collecting invalid CASC entries, resulting in {} entries.", entries.size() );
         return entries;
     }
 
     protected Set<Long> findListfileKnownEntries() {
-        LOGGER.trace("Collecting all known listfile entries from {} listfile entries and {} CASC entries.", listFile.getHashCount(), cascContext.getHashes().size());
-        Stream<Long> entriesStream = listFile.getHashes().stream()
-                .filter(filterCascKnownHash());
-        Set<Long> entries = entriesStream.collect(Collectors.toSet());
-        LOGGER.trace("Done collecting unknown listfile entries, resulting in {} entries.", entries.size());
+        LOGGER.trace( "Collecting all known listfile entries from {} listfile entries and {} CASC entries.",
+                listFile.getHashCount(), cascContext.getHashes().size() );
+        Stream<Long> entriesStream = listFile.getHashes().stream().filter( filterCascKnownHash() );
+        Set<Long> entries = entriesStream.collect( Collectors.toSet() );
+        LOGGER.trace( "Done collecting unknown listfile entries, resulting in {} entries.", entries.size() );
         return entries;
     }
 
     protected Set<Long> findListfileUnknownEntries() {
-        LOGGER.trace("Collecting all unknown listfile entries from {} listfile entries and {} CASC entries.", listFile.getHashCount(), cascContext.getHashes().size());
-        Stream<Long> entriesStream = listFile.getHashes().stream()
-                .filter(filterCascKnownHash().negate());
-        Set<Long> entries = entriesStream.collect(Collectors.toSet());
-        LOGGER.trace("Done collecting unknown listfile entries, resulting in {} entries.", entries.size());
+        LOGGER.trace( "Collecting all unknown listfile entries from {} listfile entries and {} CASC entries.",
+                listFile.getHashCount(), cascContext.getHashes().size() );
+        Stream<Long> entriesStream = listFile.getHashes().stream().filter( filterCascKnownHash().negate() );
+        Set<Long> entries = entriesStream.collect( Collectors.toSet() );
+        LOGGER.trace( "Done collecting unknown listfile entries, resulting in {} entries.", entries.size() );
         return entries;
     }
 
     protected Set<Long> findListfileValidEntries() {
-        LOGGER.trace("Collecting all valid listfile entries from {} listfile entries and {} CASC entries.", listFile.getHashCount(), cascContext.getHashes().size());
-        Stream<Long> entriesStream = listFile.getHashes().stream()
-                .filter(filterCascValidHash());
-        Set<Long> entries = entriesStream.collect(Collectors.toSet());
-        LOGGER.trace("Done collecting valid listfile entries, resulting in {} entries.", entries.size());
+        LOGGER.trace( "Collecting all valid listfile entries from {} listfile entries and {} CASC entries.",
+                listFile.getHashCount(), cascContext.getHashes().size() );
+        Stream<Long> entriesStream = listFile.getHashes().stream().filter( filterCascValidHash() );
+        Set<Long> entries = entriesStream.collect( Collectors.toSet() );
+        LOGGER.trace( "Done collecting valid listfile entries, resulting in {} entries.", entries.size() );
         return entries;
     }
 
     protected Set<Long> findListfileInvalidEntries() {
-        LOGGER.trace("Collecting all invalid listfile entries from {} listfile entries and {} CASC entries.", listFile.getHashCount(), cascContext.getHashes().size());
-        Stream<Long> entriesStream = listFile.getHashes().stream()
-                .filter(filterCascKnownHash())
-                .filter(filterCascValidHash().negate());
-        Set<Long> entries = entriesStream.collect(Collectors.toSet());
-        LOGGER.trace("Done collecting invalid listfile entries, resulting in {} entries.", entries.size());
+        LOGGER.trace( "Collecting all invalid listfile entries from {} listfile entries and {} CASC entries.",
+                listFile.getHashCount(), cascContext.getHashes().size() );
+        Stream<Long> entriesStream = listFile.getHashes().stream().filter( filterCascKnownHash() )
+                .filter( filterCascValidHash().negate() );
+        Set<Long> entries = entriesStream.collect( Collectors.toSet() );
+        LOGGER.trace( "Done collecting invalid listfile entries, resulting in {} entries.", entries.size() );
         return entries;
     }
 
-    private void write(Path file, Collection<?> entries) throws IOException {
+    private void write( Path file, Collection<?> entries ) throws IOException {
         final String lineMask = "%s\n";
-        try (BufferedWriter writer = Files.newBufferedWriter(file)) {
-            for (Object entry : entries) {
-                writer.write(format(lineMask, String.valueOf(entry)));
+        try ( BufferedWriter writer = Files.newBufferedWriter( file ) ) {
+            for ( Object entry : entries ) {
+                writer.write( format( lineMask, String.valueOf( entry ) ) );
             }
             writer.flush();
         }
     }
 
     public void generate() throws IOException {
-        LOGGER.debug("Writing lists to file based on {} CASC entries and {} listfile entries.", cascContext.getHashes().size(), listFile.getHashCount());
+        LOGGER.debug( "Writing lists to file based on {} CASC entries and {} listfile entries.",
+                cascContext.getHashes().size(), listFile.getHashCount() );
         Set<Long> listfileKnowndEntries = findListfileKnownEntries();
         Set<Long> listfileUnknownEntries = findListfileUnknownEntries();
         Set<Long> listfileValidEntries = findListfileValidEntries();
@@ -259,12 +318,22 @@ public class ListFileGenerator {
     }
 
     public void print() throws IOException {
-        entryStore.getExtensions().stream()
-                .forEach(ext -> System.out.println(format(" - [%s] : %d", ext, entryStore.getExtensionCount(ext))));
+        entryStore.getExtensions().stream().forEach(
+                ext -> System.out.println( format( " - [%s] : %d", ext, entryStore.getExtensionCount( ext ) ) ) );
     }
 
-    public static void main(String... args) throws IOException {
-        ListFileGenerator generator = new ListFileGenerator(Paths.get(args[0]), Paths.get(args[1]), Paths.get(args[2]));
+    /**
+     * 프로그램 진입점
+     * @param args 명령행 인자들
+     * @throws IOException
+     */
+    public static void main( String... args ) throws IOException {
+
+        ListFileGenerator generator = new ListFileGenerator( 
+                Paths.get( args[0] ),   // install path
+                Paths.get( args[1] ),   // output path
+                Paths.get( args[2] ) ); // cache path
+
         generator.print();
     }
 }

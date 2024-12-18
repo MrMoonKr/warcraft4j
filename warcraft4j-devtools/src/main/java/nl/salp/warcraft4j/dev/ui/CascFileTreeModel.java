@@ -40,35 +40,41 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * @author Barre Dijkstra
  */
 public class CascFileTreeModel implements TreeModel {
+
     private final Set<TreeModelListener> modelListeners;
     private CascFileTreeNode root;
 
-    public CascFileTreeModel(CascService cascService) {
+    public CascFileTreeModel( CascService cascService ) {
         this.modelListeners = new HashSet<>();
-        update(cascService);
+        update( cascService );
     }
 
-    public void update(CascService cascService) {
-        this.root = new CascFileTreeNode("/");
-        cascService.getAllCascFiles().forEach(this::add);
-        modelListeners.forEach(l -> l.treeStructureChanged(new TreeModelEvent(this, new TreePath(root))));
+    public void update( CascService cascService ) {
+
+        this.root = new CascFileTreeNode( "/" );
+
+        cascService.getAllCascFiles().forEach( this::add );
+        
+        modelListeners.forEach( l -> l.treeStructureChanged( new TreeModelEvent( this, new TreePath( root ) ) ) );
     }
 
-    private void add(CascFile file) {
+    private void add( CascFile file ) {
+
         String fullFilename = file.getFilename()
-                .orElse("<unknown>\\" + byteArrayToHexString(toByteArray(file.getFilenameHash())));
+                .orElse( "<unknown>\\" + byteArrayToHexString( toByteArray( file.getFilenameHash() ) ) );
+
         CascFileTreeNode folder = root;
 
-        StringTokenizer tokenizer = new StringTokenizer(fullFilename, "\\", false);
-        while (tokenizer.hasMoreTokens()) {
+        StringTokenizer tokenizer = new StringTokenizer( fullFilename, "\\", false );
+        while ( tokenizer.hasMoreTokens() ) {
             String element = tokenizer.nextToken();
-            if (isNotEmpty(element)) {
-                if (tokenizer.hasMoreTokens()) {
-                    folder = folder.addChild(element)
-                            .orElse(folder);
-                } else {
-                    folder = folder.addChild(file)
-                            .orElse(folder);
+            if ( isNotEmpty( element ) ) 
+            {
+                if ( tokenizer.hasMoreTokens() ) {
+                    folder = folder.addChild( element ).orElse( folder );
+                } 
+                else {
+                    folder = folder.addChild( file ).orElse( folder );
                 }
             }
         }
@@ -80,55 +86,47 @@ public class CascFileTreeModel implements TreeModel {
     }
 
     @Override
-    public Object getChild(Object parent, int index) {
-        return toTreeNode(parent)
-                .map(n -> n.getChildAt(index))
-                .orElse(null);
+    public Object getChild( Object parent, int index ) {
+        return toTreeNode( parent ).map( n -> n.getChildAt( index ) ).orElse( null );
     }
 
     @Override
-    public int getChildCount(Object parent) {
-        return toTreeNode(parent)
-                .map(CascFileTreeNode::getChildCount)
-                .orElse(0);
+    public int getChildCount( Object parent ) {
+        return toTreeNode( parent ).map( CascFileTreeNode::getChildCount ).orElse( 0 );
     }
 
     @Override
-    public boolean isLeaf(Object node) {
-        return toTreeNode(node)
-                .map(CascFileTreeNode::isFile)
-                .orElse(false);
+    public boolean isLeaf( Object node ) {
+        return toTreeNode( node ).map( CascFileTreeNode::isFile ).orElse( false );
     }
 
     @Override
-    public void valueForPathChanged(TreePath path, Object newValue) {
+    public void valueForPathChanged( TreePath path, Object newValue ) {
         // Ignore.
     }
 
     @Override
-    public int getIndexOfChild(Object parent, Object child) {
-        return toTreeNode(parent)
-                .map(n -> n.getIndex(toTreeNode(child).orElse(null)))
-                .orElse(-1);
+    public int getIndexOfChild( Object parent, Object child ) {
+        return toTreeNode( parent ).map( n -> n.getIndex( toTreeNode( child ).orElse( null ) ) ).orElse( -1 );
     }
 
     @Override
-    public void addTreeModelListener(TreeModelListener l) {
-        if (l != null) {
-            modelListeners.add(l);
+    public void addTreeModelListener( TreeModelListener l ) {
+        if ( l != null ) {
+            modelListeners.add( l );
         }
     }
 
     @Override
-    public void removeTreeModelListener(TreeModelListener l) {
-        if (l != null) {
-            modelListeners.remove(l);
+    public void removeTreeModelListener( TreeModelListener l ) {
+        if ( l != null ) {
+            modelListeners.remove( l );
         }
     }
 
-    private Optional<CascFileTreeNode> toTreeNode(Object node) {
-        return Optional.ofNullable(node)
-                .filter(n -> CascFileTreeNode.class.isAssignableFrom(n.getClass()))
-                .map(CascFileTreeNode.class::cast);
+    private Optional<CascFileTreeNode> toTreeNode( Object node ) {
+        return Optional.ofNullable( node )
+                .filter( n -> CascFileTreeNode.class.isAssignableFrom( n.getClass() ) )
+                .map( CascFileTreeNode.class::cast );
     }
 }

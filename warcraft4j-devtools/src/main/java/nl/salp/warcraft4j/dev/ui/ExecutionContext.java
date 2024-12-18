@@ -22,7 +22,7 @@ import nl.salp.warcraft4j.casc.CascService;
 import nl.salp.warcraft4j.dev.DevToolsConfig;
 
 /**
- * TODO Document class.
+ * Config + CascService + Logger TODO Document class.
  *
  * @author Barre Dijkstra
  */
@@ -31,7 +31,7 @@ public class ExecutionContext {
     private final CascService cascService;
     private final Logger logger;
 
-    public ExecutionContext(DevToolsConfig config, CascService cascService, Logger logger) {
+    public ExecutionContext( DevToolsConfig config, CascService cascService, Logger logger ) {
         this.config = config;
         this.cascService = cascService;
         this.logger = logger;

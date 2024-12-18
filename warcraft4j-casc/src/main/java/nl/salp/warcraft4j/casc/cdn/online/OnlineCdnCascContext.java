@@ -39,8 +39,10 @@ import static java.lang.String.format;
  */
 @Singleton
 public class OnlineCdnCascContext extends CdnCascContext {
+
     /** The URI mask for data files. */
     private static final String MASK_FILES_DATA = "%s/data/%s/%s/%s";
+
     /** The {@link CdnCascConfig}. */
     private CdnCascConfig cdnCascConfig;
 
@@ -50,8 +52,8 @@ public class OnlineCdnCascContext extends CdnCascContext {
      * @param warcraft4jConfig The {@link Warcraft4jConfig}.
      */
     @Inject
-    public OnlineCdnCascContext(Warcraft4jConfig warcraft4jConfig) {
-        super(warcraft4jConfig);
+    public OnlineCdnCascContext( Warcraft4jConfig warcraft4jConfig ) {
+        super( warcraft4jConfig );
     }
 
     /**
@@ -59,8 +61,8 @@ public class OnlineCdnCascContext extends CdnCascContext {
      */
     @Override
     public CdnCascConfig getCdnCascConfig() {
-        if (cdnCascConfig == null) {
-            cdnCascConfig = new OnlineCdnCascConfig(getWarcraft4jConfig(), getDataReaderProvider());
+        if ( cdnCascConfig == null ) {
+            cdnCascConfig = new OnlineCdnCascConfig( getWarcraft4jConfig(), getDataReaderProvider() );
         }
         return cdnCascConfig;
     }
@@ -71,10 +73,13 @@ public class OnlineCdnCascContext extends CdnCascContext {
     @Override
     protected Supplier<DataReader> getEncodingReader() {
         FileKey encodingFileChecksum = getCdnCascConfig().getStorageEncodingFileChecksum();
-        String uri = getDataFileUri(encodingFileChecksum)
-                .orElseThrow(() -> new CascParsingException(format("Unable to get the URl for the encoding file with checksum %s", encodingFileChecksum.toHexString())));
-        LOGGER.trace("Creating data supplier for {} byte encoding file {} from {}", getCdnCascConfig().getStorageEncodingFileSize(), encodingFileChecksum, uri);
-        return () -> new BlteDataReader(getDataReaderProvider().getDataReader(uri), getCdnCascConfig().getStorageEncodingFileSize());
+        String uri = getDataFileUri( encodingFileChecksum ).orElseThrow(
+                () -> new CascParsingException( format( "Unable to get the URl for the encoding file with checksum %s",
+                        encodingFileChecksum.toHexString() ) ) );
+        LOGGER.trace( "Creating data supplier for {} byte encoding file {} from {}",
+                getCdnCascConfig().getStorageEncodingFileSize(), encodingFileChecksum, uri );
+        return () -> new BlteDataReader( getDataReaderProvider().getDataReader( uri ),
+                getCdnCascConfig().getStorageEncodingFileSize() );
     }
 
     /**
@@ -82,7 +87,7 @@ public class OnlineCdnCascContext extends CdnCascContext {
      */
     @Override
     protected Index parseIndex() throws CascParsingException {
-        return new OnlineIndexParser(getCdnCascConfig(), getDataReaderProvider()).parse();
+        return new OnlineIndexParser( getCdnCascConfig(), getDataReaderProvider() ).parse();
     }
 
     /**
@@ -90,8 +95,8 @@ public class OnlineCdnCascContext extends CdnCascContext {
      */
     @Override
     protected DataReaderProvider getDataReaderProvider() {
-        if (getWarcraft4jConfig().isCaching() && cdnCascConfig != null) {
-            return new CachingOnlineDataReaderProvider(cdnCascConfig, getWarcraft4jConfig().getCacheDirectory());
+        if ( getWarcraft4jConfig().isCaching() && cdnCascConfig != null ) {
+            return new CachingOnlineDataReaderProvider( cdnCascConfig, getWarcraft4jConfig().getCacheDirectory() );
         } else {
             return new OnlineDataReaderProvider();
         }
@@ -101,30 +106,37 @@ public class OnlineCdnCascContext extends CdnCascContext {
      * {@inheritDoc}
      */
     @Override
-    protected Optional<String> getDataFileUri(IndexEntry entry) {
+    protected Optional<String> getDataFileUri( IndexEntry entry ) {
         Optional<String> uri;
-        if (entry == null) {
+        if ( entry == null ) {
             uri = Optional.empty();
-        } else {
-            uri = getDataFileUri(entry.getFileKey());
+        } 
+        else {
+            uri = getDataFileUri( entry.getFileKey() );
         }
         return uri;
     }
 
     /**
+     * 16 byte 해시키로 부터 웹 경로명 구성
      * Get the URI of the data file containing the file for a checksum.
      *
      * @param checksum The checksum of the file to retrieve the data file URI for.
      *
      * @return Optional with the data file URI if present.
      */
-    protected Optional<String> getDataFileUri(Checksum checksum) {
+    protected Optional<String> getDataFileUri( Checksum checksum ) {
         Optional<String> uri;
-        if (checksum == null || checksum.length() != 16) {
+        if ( checksum == null || checksum.length() != 16 ) {
             uri = Optional.empty();
-        } else {
+        } 
+        else {
             String keyString = checksum.toHexString();
-            uri = Optional.of(format(MASK_FILES_DATA, cdnCascConfig.getCdnUrl(), keyString.substring(0, 2), keyString.substring(2, 4), keyString));
+            uri = Optional.of( format( MASK_FILES_DATA, 
+                    cdnCascConfig.getCdnUrl(), 
+                    keyString.substring( 0, 2 ),
+                    keyString.substring( 2, 4 ), 
+                    keyString ) );
         }
         return uri;
     }

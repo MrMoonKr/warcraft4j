@@ -83,6 +83,7 @@ public abstract class DataType<T> {
     }
 
     /**
+     * "0x0" 바이트 여부 체크.  
      * Check if a byte is a terminator byte for variable length data types.
      * <p>
      * This method may be overwritten by implementations.

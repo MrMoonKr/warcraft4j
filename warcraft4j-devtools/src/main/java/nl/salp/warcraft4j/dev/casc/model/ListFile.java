@@ -40,19 +40,35 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  */
 public class ListFile {
 
+    /**
+     * <에셋명,JenkinsHash> 룩업 테이블.  
+     */
     private final Map<String, Long> files;
+    /**
+     * <JenkinsHash,에셋명> 룩업 테이블.  
+     */
     private final Map<Long, String> hashes;
     private final Set<Long> calculated;
 
-    private ListFile( Map<String, Long> files ) {
+    /**
+     * <에셋명,JenkinsHash> 룩업 테이블로 생성.  
+     * @param files
+     */
+    private ListFile( Map<String, Long> files ) 
+    {
         this.files = files;
         this.hashes = files.entrySet().stream().collect( Collectors.toMap( Map.Entry::getValue, Map.Entry::getKey ) );
         this.calculated = new HashSet<>();
     }
 
     public Set<ListCascFile> getCascFiles() {
-        return hashes.keySet().stream().map( hash -> new ListCascFile( hash, getFilenames( hash ).orElse( null ), null,
-                calculated.contains( hash ) ) ).collect( Collectors.toSet() );
+        return hashes.keySet()
+                .stream()
+                .map( hash -> new ListCascFile( hash, 
+                        getFilenames( hash ).orElse( null ),
+                        null, 
+                        calculated.contains( hash ) ) )
+                .collect( Collectors.toSet() );
     }
 
     public long getHash( String filename ) {
@@ -76,32 +92,57 @@ public class ListFile {
         return hashes.containsKey( hash );
     }
 
+    /**
+     * JenkinsHash로 룩업테이블에서 에셋명 찾기
+     * @param hash
+     * @return
+     */
     public Optional<String> getFilenames( long hash ) {
         return Optional.ofNullable( hashes.get( hash ) );
     }
 
+    /**
+     * 전체 에셋명 얻기
+     * @return
+     */
     public Set<String> getFilenames() {
         return Collections.unmodifiableSet( files.keySet() );
     }
 
+    /**
+     * 에셋명 갯수
+     * @return
+     */
     public int getFilenameCount() {
         return files.size();
     }
 
+    /**
+     * 전체 JenkinsHash 얻기
+     * @return
+     */
     public Set<Long> getHashes() {
         return Collections.unmodifiableSet( hashes.keySet() );
     }
 
+    /**
+     * 전체 JenkinsHash 갯수
+     * @return
+     */
     public int getHashCount() {
         return hashes.size();
     }
 
+    /**
+     * 비어있는 ListFile을 생성하는 팩토리 메서드
+     * @return
+     */
     public static ListFile empty() {
         return new ListFile( Collections.emptyMap() );
     }
 
     /**
-     * "listfile.txt" 파일로 부터 데이터 로딩하는 팩토리 메서드
+     * "listfile-wow6.txt" 파일로 ListFile을 생성하는 팩토리 메서드
      * @param listFile
      * @return
      * @throws IOException
@@ -125,7 +166,7 @@ public class ListFile {
             while ( reader.hasRemaining() ) 
             {
                 String line = reader.readNext( DataTypeFactory.getStringLine() ).trim();
-                if ( isNotEmpty( line ) ) 
+                if ( StringUtils.isNotEmpty( line ) ) 
                 {
                     byte[] data = line.replace( '/', '\\' ).toUpperCase().getBytes( StandardCharsets.US_ASCII );
                     long hash = JenkinsHash.hashLittle2( data, data.length );

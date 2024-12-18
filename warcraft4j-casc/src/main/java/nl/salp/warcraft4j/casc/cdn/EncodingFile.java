@@ -34,6 +34,7 @@ import java.util.*;
  * @author Barre Dijkstra
  */
 public class EncodingFile {
+    
     private final Map<Checksum, EncodingEntry> entries;
 
     public EncodingFile(List<EncodingEntry> entries) {

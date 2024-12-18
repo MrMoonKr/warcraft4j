@@ -28,21 +28,24 @@ import java.nio.file.Path;
 import java.util.*;
 
 /**
+ * "Data/data/xxxxxxxxxx.idx" 파일데이터 저장.  
  * Locale index file containing the parsed {@link LocalIndexEntry} entries.
  *
  * @author Barre Dijkstra
  */
 public class LocalIndexFile {
+
     /** The path to the index file. */
     private final Path file;
     /** The file number. */
     private final int fileNumber;
     /** The file version. */
     private final int fileVersion;
-    /** The parsed index entries. */
+    /** 룩업 테이블.  The parsed index entries. */
     private final Map<FileKey, IndexEntry> entries;
 
     /**
+     * LocalIndexFileParser로 부터 생성된다.  
      * Create a new instance.
      *
      * @param file        The path of the index file.

@@ -57,8 +57,8 @@ public class CascRootEntry implements RootEntry {
      *
      * @throws IllegalArgumentException When invalid data is provided.
      */
-    public CascRootEntry( long filenameHash, ContentChecksum contentChecksum, long blockFlags )
-            throws IllegalArgumentException {
+    public CascRootEntry( long filenameHash, ContentChecksum contentChecksum, long blockFlags ) throws IllegalArgumentException 
+    {
         this( filenameHash, contentChecksum, blockFlags, 0, 0 );
     }
 

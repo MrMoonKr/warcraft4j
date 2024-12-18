@@ -78,6 +78,7 @@ public abstract class CdnCascContext {
                 warcraft4jConfig.getWowInstallationDirectory(), 
                 warcraft4jConfig.isOnline(),
                 warcraft4jConfig.isCaching() );
+
         this.warcraft4jConfig = warcraft4jConfig;
         this.hashes = new HashMap<>();
         this.filenames = new HashMap<>();
@@ -244,7 +245,9 @@ public abstract class CdnCascContext {
      * @return The index entries.
      */
     public final List<IndexEntry> getIndexEntries( EncodingEntry encodingEntry ) {
-        return Optional.ofNullable( encodingEntry ).map( EncodingEntry::getFileKeys ).map( this::getIndexEntries )
+        return Optional.ofNullable( encodingEntry )
+                .map( EncodingEntry::getFileKeys )
+                .map( this::getIndexEntries )
                 .orElse( Collections.emptyList() );
     }
 
@@ -256,9 +259,12 @@ public abstract class CdnCascContext {
      * @return The index entries for the file keys.
      */
     public final List<IndexEntry> getIndexEntries( List<FileKey> fileKeys ) {
-        return Optional
-                .ofNullable( fileKeys ).map( keys -> keys.stream().map( key -> getIndex().getEntry( key ) )
-                        .filter( Optional::isPresent ).map( Optional::get ).collect( Collectors.toList() ) )
+        return Optional.ofNullable( fileKeys )
+                .map( keys -> keys.stream()
+                        .map( key -> getIndex().getEntry( key ) )
+                        .filter( Optional::isPresent )
+                        .map( Optional::get )
+                        .collect( Collectors.toList() ) )
                 .orElse( Collections.emptyList() );
     }
 
@@ -406,13 +412,17 @@ public abstract class CdnCascContext {
      *         entry available in the context.
      */
     public Optional<Long> getHash( String filename ) {
+
         Optional<Long> hash;
+
         String cleanedFilename = cleanFilename( filename );
         if ( isEmpty( cleanedFilename ) ) {
             hash = Optional.empty();
-        } else if ( hashes.containsKey( cleanedFilename ) ) {
+        } 
+        else if ( hashes.containsKey( cleanedFilename ) ) {
             hash = Optional.of( hashes.get( cleanedFilename ) );
-        } else {
+        } 
+        else {
             long filenameHash = hashFilename( cleanedFilename );
             if ( getRootFile().isEntryAvailable( filenameHash ) ) {
                 hashes.putIfAbsent( cleanedFilename, filenameHash );
@@ -422,6 +432,7 @@ public abstract class CdnCascContext {
                 hash = Optional.empty();
             }
         }
+
         return hash;
     }
 

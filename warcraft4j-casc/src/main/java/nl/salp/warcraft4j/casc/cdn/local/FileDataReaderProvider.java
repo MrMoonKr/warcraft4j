@@ -72,7 +72,9 @@ public class FileDataReaderProvider implements DataReaderProvider {
         if ( isEmpty( uri ) ) {
             throw new CascParsingException( "Can't create a file reader for an empty path." );
         }
+
         Path path = Paths.get( uri );
+        
         if ( Files.notExists( path ) || !Files.isRegularFile( path ) ) {
             throw new CascParsingException(
                     format( "Can't create a file reader for %s, file either doesn't exist or is not a file.", uri ) );

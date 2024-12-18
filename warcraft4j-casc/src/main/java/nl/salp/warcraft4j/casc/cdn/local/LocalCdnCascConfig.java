@@ -157,7 +157,9 @@ public class LocalCdnCascConfig extends BaseCdnCascConfig {
      */
     @Override
     public List<String> getAvailableRegions() {
-        return getBuildInfo().getValues( KEY_BUILDINFO_REGION ).orElse( Collections.emptyList() );
+        return getBuildInfo()
+                .getValues( KEY_BUILDINFO_REGION )
+                .orElse( Collections.emptyList() );
     }
 
     /**
@@ -165,9 +167,12 @@ public class LocalCdnCascConfig extends BaseCdnCascConfig {
      */
     @Override
     public String getCdnUrl() {
-        String host = getBuildInfo().getFirstValue( KEY_BUILDINFO_CDN_HOSTS ).map( s -> s.split( " " )[0] )
+        String host = getBuildInfo()
+                .getFirstValue( KEY_BUILDINFO_CDN_HOSTS )
+                .map( s -> s.split( " " )[0] )
                 .orElseThrow( () -> new CascParsingException( "No CDN host(s) available." ) );
-        String path = getBuildInfo().getFirstValue( KEY_BUILDINFO_CDN_PATH )
+        String path = getBuildInfo()
+                .getFirstValue( KEY_BUILDINFO_CDN_PATH )
                 .orElseThrow( () -> new CascParsingException( "No CDN path available." ) );
         return String.format( "http://%s%s", host, path );
     }
@@ -177,7 +182,8 @@ public class LocalCdnCascConfig extends BaseCdnCascConfig {
      */
     @Override
     public String getVersion() {
-        return getBuildInfo().getFirstValue( KEY_BUILDINFO_VERSION )
+        return getBuildInfo()
+                .getFirstValue( KEY_BUILDINFO_VERSION )
                 .orElseThrow( () -> new CascParsingException( "No version available." ) );
     }
 }

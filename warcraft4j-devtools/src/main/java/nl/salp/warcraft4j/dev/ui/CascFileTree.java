@@ -34,21 +34,21 @@ import java.util.stream.Stream;
  * @author Barre Dijkstra
  */
 public class CascFileTree implements TreeSelectionListener {
-    
+
     private final ExecutionContext context;
     private final CascFileTreeModel treeModel;
     private final JTree tree;
 
-    public CascFileTree(ExecutionContext context) {
+    public CascFileTree( ExecutionContext context ) {
         this.context = context;
-        treeModel = new CascFileTreeModel(context.getCascService());
-        tree = new JTree(treeModel);
-        tree.addTreeSelectionListener(this);
+        this.treeModel = new CascFileTreeModel( context.getCascService() );
+        this.tree = new JTree( treeModel );
+        this.tree.addTreeSelectionListener( this );
     }
 
-    public void update(CascService service) {
-        if (service != null) {
-            treeModel.update(service);
+    public void update( CascService service ) {
+        if ( service != null ) {
+            treeModel.update( service );
         }
     }
 
@@ -57,20 +57,18 @@ public class CascFileTree implements TreeSelectionListener {
     }
 
     @Override
-    public void valueChanged(TreeSelectionEvent e) {
-        String oldPath = Optional.ofNullable(e.getOldLeadSelectionPath())
-                .map(TreePath::getPath)
-                .map(Stream::of)
-                .map(s -> s.map(Object::toString)
-                        .collect(Collectors.joining("\\")))
-                .orElse("<none>");
-        String newPath = Optional.ofNullable(e.getPath())
-                .map(TreePath::getPath)
-                .map(Stream::of)
-                .map(s -> s.map(Object::toString)
-                        .collect(Collectors.joining("\\")))
-                .orElse("<none>");
+    public void valueChanged( TreeSelectionEvent e ) {
+        String oldPath = Optional.ofNullable( e.getOldLeadSelectionPath() )
+                .map( TreePath::getPath )
+                .map( Stream::of )
+                .map( s -> s.map( Object::toString ).collect( Collectors.joining( "\\" ) ) )
+                .orElse( "<none>" );
+        String newPath = Optional.ofNullable( e.getPath() )
+                .map( TreePath::getPath )
+                .map( Stream::of )
+                .map( s -> s.map( Object::toString ).collect( Collectors.joining( "\\" ) ) )
+                .orElse( "<none>" );
 
-        context.getLogger().debug("Changed selection from {} to {}", oldPath, newPath);
+        context.getLogger().debug( "Changed selection from {} to {}", oldPath, newPath );
     }
 }

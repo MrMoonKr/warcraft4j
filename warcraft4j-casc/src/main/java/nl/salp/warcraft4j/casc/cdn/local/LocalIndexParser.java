@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 
 /**
+ * "Data/data/xxxxxxxxxx.idx" 파일들 관리자.  
  * Parser for parsing all {@link LocalIndexFile} files in a World of Warcraft
  * installation directory to a {@link Index}.
  *
@@ -48,6 +49,7 @@ public class LocalIndexParser {
     
     /** The logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger( LocalIndexParser.class );
+
     /** The World of Warcraft installation directory. */
     private final Path installationDirectory;
 
@@ -80,7 +82,9 @@ public class LocalIndexParser {
                 .distinct()
                 .collect( Collectors.toList() );
 
-        LOGGER.trace( "Parsed {} index entries from {} index files.", entries.size(), latestIndexFiles.size() );
+        LOGGER.trace( "Parsed {} index entries from {} index files.", 
+                entries.size(), 
+                latestIndexFiles.size() );
 
         return new Index( entries );
     }
@@ -103,35 +107,39 @@ public class LocalIndexParser {
     }
 
     /**
+     * 최신 버전의 ".idx" 파일 모으기 및 반환.  
      * Get the paths of the latest version of each index file.
      *
      * @return The paths of the latest index file version.
      */
-    private Collection<Path> getLatestIndexFilePaths() 
-    {
-        try 
-        {
-            Path path = installationDirectory.resolve( Paths.get( "Data", "data" ) ); // "~/Data/data"
+    private Collection<Path> getLatestIndexFilePaths() {
+        try {
+            Path path = installationDirectory.resolve( Paths.get( "Data", "data" ) ); // "INSTALL_DIR/Data/data"
             IndexFileScanner scanner = new IndexFileScanner();
+
             Files.walkFileTree( path, scanner );
+
             Map<Integer, Path> latestFiles = new HashMap<>();
             List<Path> indexFiles = scanner.getIndexFiles();
             for ( Path p : indexFiles ) {
                 int fileNum = parseFileNumber( p );
-                if ( !latestFiles.containsKey( fileNum ) || 
-                        parseFileVersion( p ) > parseFileNumber( latestFiles.get( fileNum ) ) ) 
+                if ( !latestFiles.containsKey( fileNum ) || parseFileVersion( p ) > parseFileNumber( latestFiles.get( fileNum ) ) ) 
                 {
-                    LOGGER.trace( "Using index file {} version {} instead of version {}", fileNum,
+                    LOGGER.trace( "Using index file {} version {} instead of version {}", 
+                            fileNum,
                             parseFileVersion( p ),
                             latestFiles.containsKey( fileNum ) ? parseFileVersion( latestFiles.get( fileNum ) ) : 0 );
 
                     latestFiles.put( fileNum, p );
                 } 
                 else {
-                    LOGGER.trace( "Skipping index file {} version {} in favor of version {}", fileNum,
-                            parseFileVersion( p ), parseFileVersion( latestFiles.get( fileNum ) ) );
+                    LOGGER.trace( "Skipping index file {} version {} in favor of version {}", 
+                            fileNum,
+                            parseFileVersion( p ), 
+                            parseFileVersion( latestFiles.get( fileNum ) ) );
                 }
             }
+
             LOGGER.trace( "Found {} up-to-date index files in {}", latestFiles.size(), path );
             return latestFiles.values();
         } 
@@ -141,6 +149,7 @@ public class LocalIndexParser {
     }
 
     /**
+     * 파일 번호 : 첫 1바이트 2문자.  ex) [0a]0000000b.idx
      * Parse the file number from the path of an index file.
      *
      * @param file The file path.
@@ -156,6 +165,7 @@ public class LocalIndexParser {
     }
 
     /**
+     * 파일 버전 : 뒤 4바이트 8문자.  ex) 0a[0000000b].idx
      * Parse the file version from the path of an index file.
      *
      * @param file The file path.
@@ -171,6 +181,7 @@ public class LocalIndexParser {
     }
 
     /**
+     * ".idx" 파일들 모으기
      * {@link FileVisitor} implementation for finding index files.
      * {@link Files#walkFileTree(Path, FileVisitor)} callback for finding index files.
      */
@@ -231,6 +242,7 @@ public class LocalIndexParser {
         }
 
         /**
+         * ".idx" 확장자 체크.  
          * Check if a path refers to a readable index file.
          *
          * @param file The path to a file.

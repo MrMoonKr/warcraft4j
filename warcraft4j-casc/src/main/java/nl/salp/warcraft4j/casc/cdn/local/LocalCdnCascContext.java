@@ -46,6 +46,7 @@ import static java.lang.String.format;
  */
 @Singleton
 public class LocalCdnCascContext extends CdnCascContext {
+
     /** The CASC configuration. */
     private CdnCascConfig cdnCascConfig;
 
@@ -60,6 +61,7 @@ public class LocalCdnCascContext extends CdnCascContext {
     }
 
     /**
+     * 로컬 CASC 설정 생성 및 구성.  
      * {@inheritDoc}
      */
     @Override
@@ -76,12 +78,17 @@ public class LocalCdnCascContext extends CdnCascContext {
     @Override
     protected Supplier<DataReader> getEncodingReader() {
         FileKey encodingFileChecksum = getCdnCascConfig().getStorageEncodingFileChecksum();
-        IndexEntry indexEntry = Optional.ofNullable( encodingFileChecksum ).flatMap( this::getIndexEntry )
-                .orElseThrow( () -> new CascParsingException(
-                        format( "No entry found for encoding file entry %s", encodingFileChecksum.toHexString() ) ) );
+        IndexEntry indexEntry = Optional.ofNullable( encodingFileChecksum )
+                .flatMap( this::getIndexEntry )
+                .orElseThrow( () -> new CascParsingException( 
+                        format( "No entry found for encoding file entry %s",
+                                encodingFileChecksum.toHexString() ) ) );
         LOGGER.trace( "Creating data supplier for encoding file {} from {} bytes of data in data.{} at offset {}",
-                encodingFileChecksum, indexEntry.getFileSize(), format( "%03d", indexEntry.getFileNumber() ),
+                encodingFileChecksum, 
+                indexEntry.getFileSize(), 
+                format( "%03d", indexEntry.getFileNumber() ),
                 indexEntry.getDataFileOffset() );
+                
         return getFileDataReaderSupplier( indexEntry );
     }
 
@@ -105,7 +112,7 @@ public class LocalCdnCascContext extends CdnCascContext {
     }
 
     /**
-     * "~/Data/data/" 디렉토리에서 "xxxxxxxxxx.idx" 파일들 파싱
+     * "INSTALL_DIR/Data/data/" 디렉토리에서 "xxxxxxxxxx.idx" 파일들 파싱
      * {@inheritDoc}
      */
     @Override

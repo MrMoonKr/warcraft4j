@@ -26,6 +26,7 @@ import java.nio.charset.Charset;
  * @author Barre Dijkstra
  */
 public class DataTypeFactory {
+    
     /** Single 8-bit signed byte instance. */
     private static final DataType<Byte> BYTE = new ByteDataType();
     /**

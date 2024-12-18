@@ -26,7 +26,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.Optional;
 
 /**
- * ".idx" 파일내 저장된 실재 파일 데이터에 대한 정보 저장 클래스
+ * ".idx" 파일내 저장된 실재 파일 데이터에 대한 정보 저장 클래스.  
  * {@link IndexEntry} implementation for a CDN based CASC, 
  * relating a file key to a actual file (segment).
  *
@@ -36,15 +36,15 @@ import java.util.Optional;
 public class CascIndexEntry implements IndexEntry {
 
     /** The file key of the entry. */
-    private final FileKey fileKey;
+    private final FileKey   fileKey;
     /** The data file number containing the file. */
-    private final int fileNumber;
+    private final int       fileNumber;
     /** The offset in the data file where the file data starts. */
-    private final int dataFileOffset;
+    private final int       dataFileOffset;
     /** The size of the file data in the data file. */
-    private final long fileSize;
+    private final long      fileSize;
     /** The cached hashcode of the index entry instance. */
-    private final int hash;
+    private final int       hash;
 
     /**
      * Create a new index entry instance.
@@ -58,8 +58,8 @@ public class CascIndexEntry implements IndexEntry {
      */
     public CascIndexEntry( FileKey fileKey, int fileNumber, int dataFileOffset, long fileSize ) 
     {
-        this.fileKey = Optional.ofNullable( fileKey ).orElseThrow(
-                () -> new IllegalArgumentException( "Unable to create a CascIndexEntry for a null file key." ) );
+        this.fileKey = Optional.ofNullable( fileKey )
+                .orElseThrow( () -> new IllegalArgumentException( "Unable to create a CascIndexEntry for a null file key." ) );
         this.fileSize = fileSize;
         this.fileNumber = fileNumber;
         this.dataFileOffset = dataFileOffset;

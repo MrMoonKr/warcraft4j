@@ -28,12 +28,14 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * {@link EncodingEntry} for a CDN based CASC, relating the checksum of the content of a file to the file keys referencing the file (segement) data.
+ * {@link EncodingEntry} for a CDN based CASC, relating the checksum of the
+ * content of a file to the file keys referencing the file (segement) data.
  *
  * @author Barre Dijkstra
  * @see nl.salp.warcraft4j.casc.EncodingEntry
  */
 public class CascEncodingEntry implements EncodingEntry {
+
     /** The size of the referenced file. */
     private final long fileSize;
     /** The checksum of the file content. */
@@ -52,12 +54,13 @@ public class CascEncodingEntry implements EncodingEntry {
      *
      * @throws IllegalArgumentException When the provided values were incorrect.
      */
-    public CascEncodingEntry(long fileSize, ContentChecksum contentChecksum, List<FileKey> fileChecksums) throws IllegalArgumentException {
+    public CascEncodingEntry( long fileSize, ContentChecksum contentChecksum, List<FileKey> fileChecksums ) throws IllegalArgumentException 
+    {
         this.fileSize = fileSize;
-        this.contentChecksum = Optional.ofNullable(contentChecksum).orElseThrow(() -> new IllegalArgumentException("Can't create an encoding file entry with no content checksum"));
-        this.fileChecksums = Optional.ofNullable(fileChecksums)
-                .filter(f -> !f.isEmpty())
-                .orElseThrow(() -> new IllegalArgumentException("Can't create an encoding file entry with no file checksums"));
+        this.contentChecksum = Optional.ofNullable( contentChecksum ).orElseThrow(
+                () -> new IllegalArgumentException( "Can't create an encoding file entry with no content checksum" ) );
+        this.fileChecksums = Optional.ofNullable( fileChecksums ).filter( f -> !f.isEmpty() ).orElseThrow(
+                () -> new IllegalArgumentException( "Can't create an encoding file entry with no file checksums" ) );
         this.hash = contentChecksum.hashCode();
     }
 
@@ -82,7 +85,7 @@ public class CascEncodingEntry implements EncodingEntry {
      */
     @Override
     public FileKey getFirstFileKey() {
-        return fileChecksums.get(0);
+        return fileChecksums.get( 0 );
     }
 
     /**
@@ -121,8 +124,8 @@ public class CascEncodingEntry implements EncodingEntry {
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public boolean equals( Object obj ) {
+        return EqualsBuilder.reflectionEquals( this, obj );
     }
 
     /**
@@ -130,6 +133,6 @@ public class CascEncodingEntry implements EncodingEntry {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return ToStringBuilder.reflectionToString( this );
     }
 }

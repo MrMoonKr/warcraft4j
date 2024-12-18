@@ -51,6 +51,7 @@ public class LocalIndexFileParser {
 
     /** The logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger( LocalIndexFileParser.class );
+    
     /** The size of an entry in bytes. */
     public static final int ENTRY_SIZE = 18;
     /** The path of the index file. */
@@ -214,11 +215,11 @@ public class LocalIndexFileParser {
      */
     private IndexEntry parseEntry( DataReader reader ) throws DataReadingException, DataParsingException {
         
-        byte[] fileKey = reader.readNext( DataTypeFactory.getByteArray( 9 ) );
+        byte[] fileKey      = reader.readNext( DataTypeFactory.getByteArray( 9 ) );
         short indexInfoHigh = reader.readNext( DataTypeFactory.getUnsignedByte() );
-        long indexInfoLow = reader.readNext( DataTypeFactory.getUnsignedInteger(), ByteOrder.BIG_ENDIAN );
-        long fileSize = reader.readNext( DataTypeFactory.getUnsignedInteger(), ByteOrder.LITTLE_ENDIAN );
-        IndexEntry entry = new LocalIndexEntry( new FileKey( fileKey ), indexInfoHigh, indexInfoLow, fileSize );
+        long indexInfoLow   = reader.readNext( DataTypeFactory.getUnsignedInteger(), ByteOrder.BIG_ENDIAN );
+        long fileSize       = reader.readNext( DataTypeFactory.getUnsignedInteger(), ByteOrder.LITTLE_ENDIAN );
+        IndexEntry entry    = new LocalIndexEntry( new FileKey( fileKey ), indexInfoHigh, indexInfoLow, fileSize );
         return entry;
     }
 

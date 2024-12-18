@@ -90,6 +90,7 @@ public class FileDataReader extends BaseDataReader {
         if ( !Files.isReadable( file ) ) {
             throw new IllegalArgumentException( format( "Can't create a random access file data reader for non readable file %s", file ) );
         }
+
         try {
             channel = FileChannel.open( file, READ );
         } 
@@ -152,7 +153,8 @@ public class FileDataReader extends BaseDataReader {
     protected int readData( ByteBuffer buffer ) throws DataReadingException {
         try {
             return channel.read( buffer );
-        } catch ( IOException e ) {
+        } 
+        catch ( IOException e ) {
             throw new DataReadingException( e );
         }
     }
