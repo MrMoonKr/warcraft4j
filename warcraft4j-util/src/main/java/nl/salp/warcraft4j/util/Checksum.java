@@ -26,6 +26,7 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.ArrayUtils.subarray;
 
 /**
+ * 16바이트 또는 9바이트 배열형태 해시키와 그에 대한 4바이트 정수 해시키 유지
  * Generic checksum.
  *
  * @author Barre Dijkstra
@@ -150,5 +151,23 @@ public class Checksum {
     @Override
     public String toString() {
         return DataTypeUtil.byteArrayToHexString( checksum );
+    }
+
+    /**
+     * 간단한 4바이트 정수 해시키 생성 메소드.  
+     * @param data 입력 바이트 배열 
+     * @return
+     */
+    @SuppressWarnings( "unused" )
+    private int hash( byte[] data ) {
+        if ( data == null || data.length == 0 ) {
+            return 0;
+        }
+        long hash = 2166136261L;
+        for ( byte b : data ) {
+            hash ^= b;
+            hash *= 16777619L;
+        }
+        return ( int )hash;
     }
 }

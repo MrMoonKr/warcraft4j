@@ -96,13 +96,16 @@ public class LocalIndexFileParser {
 
         int dataHeaderLength = reader.readNext( DataTypeFactory.getInteger(), ByteOrder.LITTLE_ENDIAN );
         Checksum dataHeaderChecksum = new Checksum( reader.readNext( DataTypeFactory.getByteArray( 4 ) ) ); // ByteOrder.LITTLE_ENDIAN
+        
         // TODO Validate header based on the checksum.
         IndexHeaderV2 header = this.parseHeader( reader );
         LOGGER.trace( "Parsed header {}", header );
+
         reader.position( ( 8 + dataHeaderLength + 0x0F ) & 0xFFFFFFF0 );
 
         int dataLength = reader.readNext( DataTypeFactory.getInteger(), ByteOrder.LITTLE_ENDIAN );
         Checksum dataChecksum = new Checksum( reader.readNext( DataTypeFactory.getByteArray( 4 ) ) ); // ByteOrder.LITTLE_ENDIAN
+        
         // TODO Validate data based on the checksum.
         int entryCount = ( dataLength / ENTRY_SIZE );
         LOGGER.trace( "Parsing {} index file entries from {} bytes at position {}", entryCount, dataLength,
@@ -145,6 +148,7 @@ public class LocalIndexFileParser {
     }
 
     /**
+     * .idx 파일헤더를 읽고 파싱한다.
      * Read and parse the index file header.
      *
      * @param reader The reader to read the header data from.
@@ -157,21 +161,22 @@ public class LocalIndexFileParser {
      */
     private IndexHeaderV2 parseHeader( DataReader reader ) throws CascParsingException, DataReadingException, DataParsingException 
     {
-        int indexVersion = reader.readNext( DataTypeFactory.getUnsignedShort(), ByteOrder.LITTLE_ENDIAN );
+        int indexVersion        = reader.readNext( DataTypeFactory.getUnsignedShort(), ByteOrder.LITTLE_ENDIAN );
         if ( indexVersion != 0x07 ) {
             throw new CascParsingException(
                     format( "Invalid index file header version 0x%02X, requires 0x07", indexVersion ) );
         }
-        byte keyIndex = reader.readNext( DataTypeFactory.getByte() );
-        byte extraBytes = reader.readNext( DataTypeFactory.getByte() );
-        byte spanSizeBytes = reader.readNext( DataTypeFactory.getByte() );
-        byte spanOffsetBytes = reader.readNext( DataTypeFactory.getByte() );
-        byte keyBytes = reader.readNext( DataTypeFactory.getByte() );
-        byte segmentBits = reader.readNext( DataTypeFactory.getByte() );
-        long maxFileOffset = reader.readNext( DataTypeFactory.getLong(), ByteOrder.BIG_ENDIAN );
+        byte keyIndex           = reader.readNext( DataTypeFactory.getByte() );
+        byte extraBytes         = reader.readNext( DataTypeFactory.getByte() );
+        byte spanSizeBytes      = reader.readNext( DataTypeFactory.getByte() );
+        byte spanOffsetBytes    = reader.readNext( DataTypeFactory.getByte() );
+        byte keyBytes           = reader.readNext( DataTypeFactory.getByte() );
+        byte segmentBits        = reader.readNext( DataTypeFactory.getByte() );
+        long maxFileOffset      = reader.readNext( DataTypeFactory.getLong(), ByteOrder.BIG_ENDIAN );
         if ( extraBytes != 0x00 || spanSizeBytes != 0x04 || spanOffsetBytes != 0x05 || keyBytes != 0x09 ) {
             throw new CascParsingException( "Invalid index file header" );
         }
+
         return new IndexHeaderV2( indexVersion, keyIndex, extraBytes, spanSizeBytes, spanOffsetBytes, keyBytes,
                 segmentBits, maxFileOffset );
     }
@@ -188,10 +193,11 @@ public class LocalIndexFileParser {
      * @throws DataParsingException When parsing the entry data failed.
      */
     private List<IndexEntry> parseEntries( DataReader reader, int entryCount ) throws DataReadingException, DataParsingException {
+        
         Set<Checksum> keys = new HashSet<>();
         List<IndexEntry> entries = new ArrayList<>();
         for ( int i = 0; i < entryCount; i++ ) {
-            IndexEntry entry = parseEntry( reader );
+            IndexEntry entry = this.parseEntry( reader );
             if ( entry != null && entry.getFileKey() != null && keys.add( entry.getFileKey() ) ) {
                 entries.add( entry );
             } 

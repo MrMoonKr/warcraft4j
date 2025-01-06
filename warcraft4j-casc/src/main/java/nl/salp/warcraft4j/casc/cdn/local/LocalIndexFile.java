@@ -56,17 +56,21 @@ public class LocalIndexFile {
      * @throws IllegalArgumentException When invalid data was provided.
      */
     public LocalIndexFile( Path file, int fileNumber, int fileVersion, List<IndexEntry> entries )
-            throws IllegalArgumentException {
-        this.file = Optional.ofNullable( file ).orElseThrow( () -> new IllegalArgumentException(
-                "Can't create an LocalIndexFile instance for an empty file path." ) );
+            throws IllegalArgumentException 
+    {
+        this.file = Optional.ofNullable( file )
+                .orElseThrow( () -> new IllegalArgumentException( "Can't create an LocalIndexFile instance for an empty file path." ) );
         this.fileNumber = fileNumber;
         this.fileVersion = fileVersion;
         this.entries = new HashMap<>();
-        entries.stream().filter( e -> e != null ).filter( e -> e.getFileKey() != null ).forEach( e -> {
-            if ( !this.entries.containsKey( e.getFileKey() ) ) {
-                this.entries.put( e.getFileKey(), e );
-            }
-        } );
+        entries.stream()
+                .filter( e -> e != null )
+                .filter( e -> e.getFileKey() != null )
+                .forEach( e -> { 
+                    if ( !this.entries.containsKey( e.getFileKey() ) ) {
+                        this.entries.put( e.getFileKey(), e );
+                    }
+                } );
     }
 
     /**

@@ -58,12 +58,12 @@ public class CascIndexEntry implements IndexEntry {
      */
     public CascIndexEntry( FileKey fileKey, int fileNumber, int dataFileOffset, long fileSize ) 
     {
-        this.fileKey = Optional.ofNullable( fileKey )
+        this.fileKey        = Optional.ofNullable( fileKey )
                 .orElseThrow( () -> new IllegalArgumentException( "Unable to create a CascIndexEntry for a null file key." ) );
-        this.fileSize = fileSize;
-        this.fileNumber = fileNumber;
+        this.fileSize       = fileSize;
+        this.fileNumber     = fileNumber;
         this.dataFileOffset = dataFileOffset;
-        this.hash = fileKey.hashCode();
+        this.hash           = fileKey.hashCode();
     }
 
     /**

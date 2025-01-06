@@ -75,7 +75,8 @@ public class EncodingFileParser {
         long startOffset = reader.position();
         LOGGER.trace( "Parsing encoding header from offset {}", startOffset );
 
-        EncodingFileHeader header = parseHeader( reader );
+        // 파일 헤더 읽어 들이기
+        EncodingFileHeader header = this.parseHeader( reader );
 
         long segmentStartPosition = startOffset + header.getSegmentOffset() + HEADER_SIZE;
         LOGGER.trace( "Parsed {} byte encoding header from position {} to {}: {}", 
@@ -97,7 +98,8 @@ public class EncodingFileParser {
         long stringsStartPosition = reader.position();
         LOGGER.trace( "Parsing encoding string segment from offset {}", ( stringsStartPosition - startOffset ) );
 
-        List<String> strings = parseStrings( segmentStartPosition, reader );
+        // 파일 헤더 이후 문자열 읽어 들이기
+        List<String> strings = this.parseStrings( segmentStartPosition, reader );
 
         LOGGER.trace( "Read {} strings from position {} to {} ({} bytes)", strings.size(), stringsStartPosition,
                 segmentStartPosition, segmentStartPosition - stringsStartPosition );
@@ -109,7 +111,8 @@ public class EncodingFileParser {
         LOGGER.trace( "Parsing {} encoding file segment checksums from offset {}", 
                 header.getSegmentCount(), segmentStartPosition - startOffset );
 
-        List<EncodingFileSegmentChecksum> segmentChecksums = parseSegmentChecksums( header.getSegmentCount(), reader );
+        // 파일 헤더 이후 세그먼트 체크섬 읽어 들이기
+        List<EncodingFileSegmentChecksum> segmentChecksums = this.parseSegmentChecksums( header.getSegmentCount(), reader );
 
         LOGGER.trace( "Read {} {}-byte segment checksums from position {} to {} ({} bytes)", 
                 segmentChecksums.size(), SEGMENT_CHECKSUMS_SIZE, segmentStartPosition, reader.position(), reader.position() - segmentStartPosition );
@@ -123,7 +126,8 @@ public class EncodingFileParser {
         LOGGER.trace( "Parsing {} encoding file entry segments from offset {}", 
                 header.getSegmentCount(), entryStartPosition - startOffset );
 
-        List<EncodingFileSegment> segments = parseSegments( header.getSegmentCount(), reader );
+        // 파일 헤더 이후 세그먼트 읽어 들이기
+        List<EncodingFileSegment> segments = this.parseSegments( header.getSegmentCount(), reader );
 
         LOGGER.trace( "Parsed {} encoding file entry segments from position {} to {} ({} bytes)",
                 header.getSegmentCount(), entryStartPosition, reader.position(), reader.position() - entryStartPosition );
@@ -153,6 +157,7 @@ public class EncodingFileParser {
                 .collect( Collectors.toList() );
         LOGGER.trace( "Successfully parsed encoding file with {} entries from {} segments", entries.size(),
                 header.getSegmentCount() );
+        
         return new EncodingFile( entries );
     }
 

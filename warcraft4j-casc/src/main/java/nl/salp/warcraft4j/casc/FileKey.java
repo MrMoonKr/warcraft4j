@@ -27,6 +27,7 @@ import static java.lang.String.format;
 import static nl.salp.warcraft4j.util.DataTypeUtil.byteArrayToHexString;
 
 /**
+ * 9바이트 해시키와 그에 대한 4바이트 정수 해시키 유지
  * {@link Checksum} for file data segment keys.
  *
  * @author Barre Dijkstra
@@ -34,6 +35,7 @@ import static nl.salp.warcraft4j.util.DataTypeUtil.byteArrayToHexString;
  * @see EncodingEntry
  */
 public class FileKey extends Checksum {
+
     /** The length of the checksum in bytes. */
     public static final int FILEKEY_LENGTH = 9;
     /** File key. 9 bytes */
@@ -42,22 +44,28 @@ public class FileKey extends Checksum {
     private final int hash;
 
     /**
+     * 16바이트 또는 상위 9바이트 해시키
      * Create a new file key instance.
      *
-     * @param checksum The checksum to create the key from (can also be a 16-byte checksum).
+     * @param checksum 16바이트 또는 9바이트 The checksum to create the key from (can also be a 16-byte
+     *                 checksum).
      *
      * @throws IllegalArgumentException When the checksum is invalid.
      */
-    public FileKey(byte[] checksum) throws IllegalArgumentException {
-        super(checksum);
-        if (getChecksum().length > FILEKEY_LENGTH) {
-            fileKey = trim(FILEKEY_LENGTH).getChecksum();
-        } else if (getChecksum().length == FILEKEY_LENGTH) {
+    public FileKey( byte[] checksum ) throws IllegalArgumentException {
+        super( checksum );
+
+        if ( getChecksum().length > FILEKEY_LENGTH ) {
+            fileKey = trim( FILEKEY_LENGTH ).getChecksum();
+        } 
+        else if ( getChecksum().length == FILEKEY_LENGTH ) {
             fileKey = checksum;
-        } else {
-            throw new IllegalArgumentException(format("Unable to create a 9 byte file key from a %d byte array.", checksum.length));
+        } 
+        else {
+            throw new IllegalArgumentException(
+                    format( "Unable to create a 9 byte file key from a %d byte array.", checksum.length ) );
         }
-        hash = DataTypeUtil.hash(fileKey);
+        hash = DataTypeUtil.hash( fileKey );
     }
 
     /**
@@ -81,10 +89,10 @@ public class FileKey extends Checksum {
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals( Object obj ) {
         boolean eq = false;
-        if (obj != null && FileKey.class.isAssignableFrom(obj.getClass())) {
-            eq = Arrays.equals(fileKey, ((FileKey) obj).fileKey);
+        if ( obj != null && FileKey.class.isAssignableFrom( obj.getClass() ) ) {
+            eq = Arrays.equals( fileKey, ( ( FileKey )obj ).fileKey );
         }
         return eq;
     }
@@ -94,6 +102,6 @@ public class FileKey extends Checksum {
      */
     @Override
     public String toString() {
-        return byteArrayToHexString(fileKey);
+        return byteArrayToHexString( fileKey );
     }
 }
